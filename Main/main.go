@@ -15,9 +15,10 @@ func Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", Home)
+    http.HandleFunc("/", Home)
+    http.Handle("/html/", http.StripPrefix("/html/", http.FileServer(http.Dir("./html/"))))
+    http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./server/"))))
 
-	fs := http.FileServer(http.Dir("./Main/"))
-	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.ListenAndServe(":8080", nil)
+    log.Fatal(http.ListenAndServe(":8080", nil))
 }
+
