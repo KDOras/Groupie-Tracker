@@ -17,7 +17,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 func main() {
 	http.HandleFunc("/", Home)
 
-	fs := http.FileServer(http.Dir("./server/"))
+	fs := http.FileServer(http.Dir("./Main/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.ListenAndServe(":8080", nil)
 }
