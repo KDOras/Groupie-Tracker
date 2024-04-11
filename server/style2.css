@@ -1,0 +1,19 @@
+.titre {
+  color: white;
+  font-size: 500%;
+  position: absolute;
+}
+
+:root {
+  background-color: aquamarine;
+}
+
+body {
+  margin: 0;
+}
+
+header {
+  background: rgb(175, 25, 25);
+  height: 100px;
+  font-size: 250%;
+}

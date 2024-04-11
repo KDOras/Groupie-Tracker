@@ -1,0 +1,50 @@
+.titre {
+  color: white;
+  font-size: 500%;
+  position: absolute;
+  left: 33%;
+  top: 50px;
+}
+
+:root {
+  background-color: aquamarine;
+}
+
+.play {
+  border: 0;
+  line-height: 2.5;
+  padding: 0 60px;
+  font-size: 5rem;
+  text-align: center;
+  color: #fff;
+  text-shadow: 1px 1px 1px #000;
+  border-radius: 30px;
+  background-color: rgba(255, 0, 0, 1);
+  background-image: linear-gradient(
+    to top left,
+    rgba(0, 0, 0, 0.2),
+    rgba(0, 0, 0, 0.2) 30%,
+    rgba(0, 0, 0, 0)
+  );
+  position: absolute;
+  left: 40%;
+  top: 350px;
+  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, 0.6),
+    inset -2px -2px 3px rgba(0, 0, 0, 0.6);
+}
+
+.play:hover {
+  background-color: rgba(255, 0, 0, 1);
+}
+
+.play:active {
+  box-shadow: inset -2px -2px 3px rgba(255, 255, 255, 0.6),
+    inset 2px 2px 3px rgba(0, 0, 0, 0.6);
+}
+
+.dificulty {
+  background-color: red;
+  position: absolute;
+  left: 40%;
+  top: 400px;
+}
