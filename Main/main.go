@@ -1,6 +1,7 @@
 package main
 
 import (
+	"groupie/Go/accountManager"
 	"html/template"
 	"log"
 	"net/http"
@@ -15,6 +16,8 @@ func Home(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	accountManager.LoggingIn("test", "test")
+	print("test1")
 	http.HandleFunc("/", Home)
 
 	fs := http.FileServer(http.Dir("./Main/"))
