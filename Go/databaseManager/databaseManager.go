@@ -14,6 +14,25 @@ type User struct {
 	Password string
 }
 
+type ConnectedUser struct {
+	Id     int
+	Pseudo string
+}
+
+type Room struct {
+	Id        int
+	CreatedBy ConnectedUser
+	MaxPlayer int
+	Name      string
+	Password  string
+	GameMode  GameMode
+}
+
+type GameMode struct {
+	Id   int
+	Name string
+}
+
 // Region Start - Database
 
 func InitDatabase(database string) *sql.DB {
@@ -36,6 +55,7 @@ func InitDatabase(database string) *sql.DB {
 					created_by INTEGER NOT NULL,
 					max_player INTEGER NOT NULL,
 					name TEXT NOT NULL,
+					password TEXT,
 					id_game INTEGER,
 					FOREIGN KEY (created_by) REFERENCES USER(id),
 					FOREIGN KEY (id_game) REFERENCES GAMES(id)
@@ -67,7 +87,113 @@ func InitDatabase(database string) *sql.DB {
 
 // Region End - Database
 
+// Region Start - Rooms
+
+func insertIntoRooms(db *sql.DB, room Room) (int64, error) {
+	result, _ := db.Exec(`INSERT INTO ROOMS (created_by, max_player, name, password, id_game) VALUES (?, ?, ?, ?, ?)`, room.CreatedBy.Id, room.MaxPlayer, room.Name, room.Password, room.GameMode.Id)
+	return result.LastInsertId()
+}
+
+func CreateRoom(db *sql.DB, room Room) {
+	go insertIntoRooms(db, room)
+}
+
+func GetRoom(db *sql.DB, id int) Room {
+	data, err := db.Query(`SELECT * FROM ROOMS WHERE (id==?)`, id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var room Room
+	var created_by int
+	var game int
+	for data.Next() {
+		data.Scan(&room.Id, &created_by, room.MaxPlayer, room.Name, room.Password, &game)
+	}
+	room.CreatedBy = GetUserById(db, created_by)
+	room.GameMode = getGame(db, game)
+	return room
+}
+
+func JoinRoom(db *sql.DB, user ConnectedUser, room Room) {
+	// TODO
+}
+
+func LeaveRoom(db *sql.DB, user ConnectedUser, room Room) {
+	// TODO
+}
+
+func DelRoom(db *sql.DB, roomId int) {
+	// TODO
+}
+
+func GetNumberOfPlayerFromRoom(db *sql.DB, roomId int) int {
+	// TODO
+	return 0
+}
+
+// Region End - Rooms
+
+// Region Start - Game Modes
+
+func getGame(db *sql.DB, id int) GameMode {
+	data, err := db.Query(`SELECT * FROM GAMES WHERE (id==?)`, id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var game GameMode
+	for data.Next() {
+		data.Scan(&game.Id, &game.Name)
+	}
+	return game
+}
+
+// Region End - Game Modes
+
 // Region Start - User
+
+func LoggingInWithPseudo(pseudo string, password string) {
+	// TODO
+}
+
+func LoggingInWithMail(pseudo string, password string) {
+	// TODO
+}
+
+func GetUserById(db *sql.DB, id int) ConnectedUser {
+	data, err := db.Query(`SELECT id, pseudo FROM USER WHERE (id==?)`, id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var user ConnectedUser
+	for data.Next() {
+		data.Scan(&user.Id, &user.Pseudo)
+	}
+	return user
+}
+
+func GetUserByPseudo(db *sql.DB, pseudo string) ConnectedUser {
+	data, err := db.Query(`SELECT id, pseudo FROM USER WHERE (pseudo==?)`, pseudo)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var user ConnectedUser
+	for data.Next() {
+		data.Scan(&user.Id, &user.Pseudo)
+	}
+	return user
+}
+
+func GetUserByMail(db *sql.DB, email string) ConnectedUser {
+	data, err := db.Query(`SELECT id, pseudo FROM USER WHERE (email==?)`, email)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var user ConnectedUser
+	for data.Next() {
+		data.Scan(&user.Id, &user.Pseudo)
+	}
+	return user
+}
 
 func insertIntoUser(db *sql.DB, user User) (int64, error) {
 	result, _ := db.Exec(`INSERT INTO USER (pseudo, email, password) VALUES (?, ?, ?)`, user.Pseudo, user.Email, user.Password)
@@ -99,7 +225,7 @@ func CreateNewUser(db *sql.DB, user User) string {
 	if len(err) != 0 {
 		return err
 	}
-	insertIntoUser(db, user)
+	go insertIntoUser(db, user)
 	return ""
 }
 
