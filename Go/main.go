@@ -8,9 +8,11 @@ import (
 func main() {
 	db := databaseManager.InitDatabase("SQL/database.db")
 	var user databaseManager.User
-	user.Pseudo = "Mah"
-	user.Email = "Test@MegaTest.com"
-	user.Password = "Bruh"
+	user.Pseudo = "HoDoH"
+	user.Email = "axelmichon.pro@gmail.com"
+	user.Password = "Amemlm89260@"
 
-	fmt.Println(db)
+	err := databaseManager.CreateNewUser(db, user)
+
+	fmt.Println(err)
 }
