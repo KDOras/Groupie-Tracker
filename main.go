@@ -23,9 +23,29 @@ func Next(w http.ResponseWriter, r *http.Request) {
 	template.Execute(w, nil)
 }
 
+func Create(w http.ResponseWriter, r *http.Request) {
+
+	template, err := template.ParseFiles("./createAccount.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	template.Execute(w, nil)
+}
+
+func Login(w http.ResponseWriter, r *http.Request) {
+
+	template, err := template.ParseFiles("./Login.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	template.Execute(w, nil)
+}
+
 func main() {
 	http.HandleFunc("/", Home)
 	http.HandleFunc("/gamepage", Next)
+	http.HandleFunc("/CreateAccount", Create)
+	http.HandleFunc("/Login", Login)
 	fs := http.FileServer(http.Dir("./server/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.ListenAndServe(":8080", nil)
