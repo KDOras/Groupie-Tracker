@@ -14,7 +14,7 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	template.Execute(w, nil)
 }
 
-func Next(w http.ResponseWriter, r *http.Request) {
+func GamePage(w http.ResponseWriter, r *http.Request) {
 
 	template, err := template.ParseFiles("./gamepage.html")
 	if err != nil {
@@ -43,7 +43,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", Home)
-	http.HandleFunc("/gamepage", Next)
+	http.HandleFunc("/gamepage", GamePage)
 	http.HandleFunc("/CreateAccount", Create)
 	http.HandleFunc("/Login", Login)
 	fs := http.FileServer(http.Dir("./server/"))
