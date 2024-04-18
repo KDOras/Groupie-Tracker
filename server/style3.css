@@ -1,0 +1,39 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+.container {
+  background-color: #4fd0ff;
+  width: 318px;
+  height: 400px;
+  position: relative;
+}
+.title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+  border: 1px solid black;
+  padding: 10px;
+  margin-top: 20px;
+}
+.form-group {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+label {
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+input[type="text"],
+input[type="password"] {
+  background-color: #e8dfdf;
+  padding: 5px;
+}
+button {
+  width: 125px;
+  height: 30px;
+  font-size: 25px;
+  margin-top: 20px;
+}
