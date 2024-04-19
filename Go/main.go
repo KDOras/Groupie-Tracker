@@ -7,12 +7,7 @@ import (
 
 func main() {
 	db := databaseManager.InitDatabase("SQL/database.db")
-	var user databaseManager.User
-	user.Pseudo = "HoDoH"
-	user.Email = "axelmichon.pro@gmail.com"
-	user.Password = "Amemlm89260@"
 
-	err := databaseManager.CreateNewUser(db, user)
-
+	_, err := databaseManager.LoggingIn(db, "axelmichon.pro@gmail.com", "Amemlm89260@")
 	fmt.Println(err)
 }

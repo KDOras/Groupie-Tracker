@@ -9,14 +9,14 @@ import (
 )
 
 type User struct {
-	Pseudo   string
+	Username string
 	Email    string
 	Password string
 }
 
 type ConnectedUser struct {
-	Id     int
-	Pseudo string
+	Id       int
+	Username string
 }
 
 type Room struct {
@@ -45,7 +45,7 @@ func InitDatabase(database string) *sql.DB {
 	sqltStmt := `
 				CREATE TABLE IF NOT EXISTS USER (
 					id INTEGER PRIMARY KEY,
-					pseudo TEXT NOT NULL,
+					Username TEXT NOT NULL,
 					email TEXT NOT NULL,
 					password TEXT NOT NULL
 				);
@@ -94,8 +94,13 @@ func insertIntoRooms(db *sql.DB, room Room) (int64, error) {
 	return result.LastInsertId()
 }
 
+func insertIntoRoom_Users(db *sql.DB, room Room, user ConnectedUser) (int64, error) {
+	result, _ := db.Exec(`INSERT INTO ROOM_USERS (id_room, id_user) VALUES (?, ?)`, room.Id, user.Id)
+	return result.LastInsertId()
+}
+
 func CreateRoom(db *sql.DB, room Room) {
-	go insertIntoRooms(db, room)
+	insertIntoRooms(db, room)
 }
 
 func GetRoom(db *sql.DB, id int) Room {
@@ -114,21 +119,45 @@ func GetRoom(db *sql.DB, id int) Room {
 	return room
 }
 
-func JoinRoom(db *sql.DB, user ConnectedUser, room Room) {
-	// TODO
+func JoinRoom(db *sql.DB, user ConnectedUser, room Room) string {
+	if !isRoomFull(db, room) {
+		insertIntoRoom_Users(db, room, user)
+		return ""
+	} else {
+		return "This room is full."
+	}
 }
 
-func LeaveRoom(db *sql.DB, user ConnectedUser, room Room) {
-	// TODO
+func isRoomFull(db *sql.DB, room Room) bool {
+	data, err := db.Query(`SELECT id_user FROM ROOM_USERS WHERE (id_room==?)`, room)
+	if err != nil {
+		log.Fatal(err)
+	}
+	n := 0
+	for data.Next() {
+		n++
+	}
+	return n < room.MaxPlayer
+}
+
+func LeaveRoom(db *sql.DB, userId int) {
+	db.Exec(`DELETE * FROM ROOM_USERS WHERE (id_user==?)`, userId)
 }
 
 func DelRoom(db *sql.DB, roomId int) {
-	// TODO
+	db.Exec(`DELETE * FROM ROOM_USERS WHERE (id_room==?)`, roomId)
 }
 
 func GetNumberOfPlayerFromRoom(db *sql.DB, roomId int) int {
-	// TODO
-	return 0
+	data, err := db.Query(`SELECT id_user FROM ROOM_USERS WHERE (id_room==?)`, roomId)
+	if err != nil {
+		log.Fatal(err)
+	}
+	n := 0
+	for data.Next() {
+		n++
+	}
+	return n
 }
 
 // Region End - Rooms
@@ -151,57 +180,78 @@ func getGame(db *sql.DB, id int) GameMode {
 
 // Region Start - User
 
-func LoggingInWithPseudo(pseudo string, password string) {
-	// TODO
-}
-
-func LoggingInWithMail(pseudo string, password string) {
-	// TODO
+func LoggingIn(db *sql.DB, prompt string, password string) (ConnectedUser, string) {
+	var user ConnectedUser
+	var errBis ConnectedUser
+	var pass string
+	var data *sql.Rows
+	var err error
+	if govalidator.IsEmail(prompt) {
+		data, err = db.Query(`SELECT id, Username, password FROM USER WHERE (email==?)`, prompt)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		data, err = db.Query(`SELECT id, Username, password FROM USER WHERE (Username==?)`, prompt)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	for data.Next() {
+		data.Scan(&user.Id, &user.Username, &pass)
+	}
+	if user.Username == "" {
+		return errBis, "No user with this username found."
+	}
+	if pass == password {
+		return user, ""
+	}
+	return errBis, "Incorrect password."
 }
 
 func GetUserById(db *sql.DB, id int) ConnectedUser {
-	data, err := db.Query(`SELECT id, pseudo FROM USER WHERE (id==?)`, id)
+	data, err := db.Query(`SELECT id, Username FROM USER WHERE (id==?)`, id)
 	if err != nil {
 		log.Fatal(err)
 	}
 	var user ConnectedUser
 	for data.Next() {
-		data.Scan(&user.Id, &user.Pseudo)
+		data.Scan(&user.Id, &user.Username)
 	}
 	return user
 }
 
-func GetUserByPseudo(db *sql.DB, pseudo string) ConnectedUser {
-	data, err := db.Query(`SELECT id, pseudo FROM USER WHERE (pseudo==?)`, pseudo)
+func GetUserByUsername(db *sql.DB, Username string) ConnectedUser {
+	data, err := db.Query(`SELECT id, Username FROM USER WHERE (Username==?)`, Username)
 	if err != nil {
 		log.Fatal(err)
 	}
 	var user ConnectedUser
 	for data.Next() {
-		data.Scan(&user.Id, &user.Pseudo)
+		data.Scan(&user.Id, &user.Username)
 	}
 	return user
 }
 
 func GetUserByMail(db *sql.DB, email string) ConnectedUser {
-	data, err := db.Query(`SELECT id, pseudo FROM USER WHERE (email==?)`, email)
+	data, err := db.Query(`SELECT id, Username FROM USER WHERE (email==?)`, email)
 	if err != nil {
 		log.Fatal(err)
 	}
 	var user ConnectedUser
 	for data.Next() {
-		data.Scan(&user.Id, &user.Pseudo)
+		data.Scan(&user.Id, &user.Username)
 	}
 	return user
 }
 
 func insertIntoUser(db *sql.DB, user User) (int64, error) {
-	result, _ := db.Exec(`INSERT INTO USER (pseudo, email, password) VALUES (?, ?, ?)`, user.Pseudo, user.Email, user.Password)
+	result, _ := db.Exec(`INSERT INTO USER (Username, email, password) VALUES (?, ?, ?)`, user.Username, user.Email, user.Password)
 	return result.LastInsertId()
 }
 
-func DeleteUserWithPseudo(db *sql.DB, pseudo string) {
-	db.Exec(`DELETE FROM USER WHERE (pseudo==?)`, pseudo)
+func DeleteUserWithUsername(db *sql.DB, Username string) {
+	db.Exec(`DELETE FROM USER WHERE (Username==?)`, Username)
 }
 
 func DeleteUserWithId(db *sql.DB, id int64) {
@@ -213,7 +263,7 @@ func DeleteUserWithEmail(db *sql.DB, email string) {
 }
 
 func CreateNewUser(db *sql.DB, user User) string {
-	err := checkPseudo(db, user.Pseudo)
+	err := checkUsername(db, user.Username)
 	if len(err) != 0 {
 		return err
 	}
@@ -225,27 +275,32 @@ func CreateNewUser(db *sql.DB, user User) string {
 	if len(err) != 0 {
 		return err
 	}
-	go insertIntoUser(db, user)
+	insertIntoUser(db, user)
 	return ""
 }
 
-func checkPseudo(db *sql.DB, pseudo string) string {
-	rows, err := db.Query(`SELECT pseudo FROM USER WHERE (pseudo==?)`, pseudo)
+func checkUsername(db *sql.DB, Username string) string {
+	rows, err := db.Query(`SELECT Username FROM USER WHERE (Username==?)`, Username)
 	if err != nil {
 		log.Fatal(err)
 	}
 	var user User
 	for rows.Next() {
-		err := rows.Scan(&user.Pseudo)
+		err := rows.Scan(&user.Username)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-	if user.Pseudo != "" {
-		return "This pseudo is already used."
+	if user.Username != "" {
+		return "This Username is already used."
 	}
-	if len(pseudo) < 3 {
+	if len(Username) < 3 {
 		return "Invalid Length, must be greater than 3."
+	}
+	for i := range Username {
+		if string(Username[i]) == "@" {
+			return "Invalid username, '@' is not a supported character"
+		}
 	}
 	return ""
 }
