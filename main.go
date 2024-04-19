@@ -34,7 +34,7 @@ func Create(w http.ResponseWriter, r *http.Request) {
 
 func Login(w http.ResponseWriter, r *http.Request) {
 
-	template, err := template.ParseFiles("./Login.html")
+	template, err := template.ParseFiles("./login.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -43,8 +43,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", Home)
-	http.HandleFunc("/gamepage", GamePage)
-	http.HandleFunc("/CreateAccount", Create)
+	http.HandleFunc("/Gamepage", GamePage)
+	http.HandleFunc("/Register", Create)
 	http.HandleFunc("/Login", Login)
 	fs := http.FileServer(http.Dir("./server/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
