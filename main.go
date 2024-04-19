@@ -25,7 +25,6 @@ func GamePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func Create(w http.ResponseWriter, r *http.Request, RegisterVar databaseManager.User) {
-
 	template, err := template.ParseFiles("./createAccount.html")
 	if err != nil {
 		log.Fatal(err)
