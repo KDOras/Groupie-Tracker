@@ -35,7 +35,7 @@ func Create(w http.ResponseWriter, r *http.Request, RegisterVar databaseManager.
 
 func Login(w http.ResponseWriter, r *http.Request, LoginVar databaseManager.User) {
 
-	template, err := template.ParseFiles("./Login.html")
+	template, err := template.ParseFiles("./login.html")
 	if err != nil {
 		log.Fatal(err)
 	}
