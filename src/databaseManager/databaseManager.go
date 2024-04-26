@@ -100,7 +100,7 @@ func insertIntoRooms(db *sql.DB, room Room) (int64, error) {
 }
 
 func insertIntoRoom_Users(db *sql.DB, room Room, user ConnectedUser) (int64, error) {
-	result, _ := db.Exec(`INSERT INTO ROOM_USERS (id_room, id_user) VALUES (?, ?)`, room.Id, user.Id)
+	result, _ := db.Exec(`INSERT INTO ROOM_USERS (id_room, id_user, score) VALUES (?, ?, ?)`, room.Id, user.Id, 0)
 	return result.LastInsertId()
 }
 

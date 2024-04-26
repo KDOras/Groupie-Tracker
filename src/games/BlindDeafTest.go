@@ -1,7 +1,7 @@
 package Game
 
 import (
-	"groupie/Go/databaseManager"
+	"groupie/src/databaseManager"
 	"strings"
 )
 
