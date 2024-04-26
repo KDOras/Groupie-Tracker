@@ -25,42 +25,39 @@ func GamePage(w http.ResponseWriter, r *http.Request) {
 	template.Execute(w, nil)
 }
 
-func Create(w http.ResponseWriter, r *http.Request, RegisterVar databaseManager.User) {
+func Create(w http.ResponseWriter, r *http.Request) {
 	template, err := template.ParseFiles("./createAccount.html")
 	if err != nil {
 		log.Fatal(err)
 	}
-	template.Execute(w, RegisterVar)
+	template.Execute(w, r)
 }
 
-func Login(w http.ResponseWriter, r *http.Request, LoginVar databaseManager.User) {
+func Login(w http.ResponseWriter, r *http.Request) {
 
-	template, err := template.ParseFiles("./signin.html")
+	template, err := template.ParseFiles("./login.html")
 	if err != nil {
 		log.Fatal(err)
 	}
 	template.Execute(w, nil)
 }
 
-func Action(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databaseManager.ConnectedUser) {
+func TrySignIn(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databaseManager.ConnectedUser) {
 	r.ParseForm()
-	if r.URL.Path == "/Register" {
-		user := databaseManager.User{
-			Username: r.FormValue("username"),
-			Password: r.FormValue("password"),
-			Email:    r.FormValue("email"),
+	err := databaseManager.CreateNewUser(db, databaseManager.User{Username: r.FormValue("username"), Password: r.FormValue("password"), Email: r.FormValue("email")})
+	if err == "" {
+		userTry, err := databaseManager.LoggingIn(db, r.FormValue("username"), r.FormValue("password"))
+		if err == "" {
+			user.Id = userTry.Id
+			user.Username = userTry.Username
+			http.Redirect(w, r, "/Gamepage", http.StatusSeeOther)
 		}
-		databaseManager.CreateNewUser(db, user)
-	} else if r.URL.Path == "/Login" {
-
 	}
 }
 
 func TryLogin(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databaseManager.ConnectedUser) {
 	r.ParseForm()
-	inputUsername := r.FormValue("floatingInput")
-	inputPassword := r.FormValue("floatingPassword")
-	userTry, err := databaseManager.LoggingIn(db, inputUsername, inputPassword)
+	userTry, err := databaseManager.LoggingIn(db, r.FormValue("username"), r.FormValue("password"))
 	if err == "" {
 		user.Id = userTry.Id
 		user.Username = userTry.Username
@@ -73,13 +70,16 @@ func main() {
 	http.HandleFunc("/", Home)
 	http.HandleFunc("/Gamepage", GamePage)
 	http.HandleFunc("/Register", func(w http.ResponseWriter, r *http.Request) {
-		Create(w, r, databaseManager.User{})
+		Create(w, r)
 	})
 	http.HandleFunc("/Login", func(w http.ResponseWriter, r *http.Request) {
-		Login(w, r, databaseManager.User{})
+		Login(w, r)
 	})
-	http.HandleFunc("/EAction", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/log", func(w http.ResponseWriter, r *http.Request) {
 		TryLogin(w, r, databaseManager.InitDatabase("SQL/database.db"), &user)
+	})
+	http.HandleFunc("/sign", func(w http.ResponseWriter, r *http.Request) {
+		TrySignIn(w, r, databaseManager.InitDatabase("SQL/database.db"), &user)
 	})
 	fs := http.FileServer(http.Dir("./server/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
