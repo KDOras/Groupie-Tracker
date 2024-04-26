@@ -3,9 +3,14 @@ package databaseManager
 import (
 	"database/sql"
 	"log"
+	"math/rand"
 
-	"github.com/asaskevich/govalidator"
+	emailverifier "github.com/AfterShip/email-verifier"
 	_ "github.com/mattn/go-sqlite3"
+)
+
+var (
+	verifier = emailverifier.NewVerifier()
 )
 
 type User struct {
@@ -99,8 +104,13 @@ func insertIntoRoom_Users(db *sql.DB, room Room, user ConnectedUser) (int64, err
 	return result.LastInsertId()
 }
 
+func ChangeRoomGameMode(db *sql.DB, idRoom, idGame int) {
+	db.Exec(`UPDATE ROOMS SET id_game=? WHERE id=?`, idGame, idRoom)
+}
+
 func CreateRoom(db *sql.DB, room Room) {
 	insertIntoRooms(db, room)
+	insertIntoRoom_Users(db, room, room.CreatedBy)
 }
 
 func GetRoom(db *sql.DB, id int) Room {
@@ -129,7 +139,7 @@ func JoinRoom(db *sql.DB, user ConnectedUser, room Room) string {
 }
 
 func isRoomFull(db *sql.DB, room Room) bool {
-	data, err := db.Query(`SELECT id_user FROM ROOM_USERS WHERE (id_room==?)`, room)
+	data, err := db.Query(`SELECT id_user FROM ROOM_USERS WHERE (id_room==?)`, room.Id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -140,12 +150,42 @@ func isRoomFull(db *sql.DB, room Room) bool {
 	return n < room.MaxPlayer
 }
 
+func giveLead(db *sql.DB, roomId int, actualLead int) (int64, error) {
+	data, _ := db.Query(`SELECT id_user FROM ROOM_USERS WHERE id_user!=? AND id_room=?`, actualLead, roomId)
+	userList := []int{}
+	for data.Next() {
+		var id int
+		data.Scan(&id)
+		userList = append(userList, id)
+	}
+	if len(userList) > 1 {
+		result, _ := db.Exec(`UPDATE ROOMS SET created_by=? WHERE id=?`, userList[rand.Intn(len(userList)-1)], roomId)
+		return result.LastInsertId()
+	} else {
+		result, _ := db.Exec(`UPDATE ROOMS SET created_by=? WHERE id=?`, userList[0], roomId)
+		return result.LastInsertId()
+	}
+}
+
 func LeaveRoom(db *sql.DB, userId int) {
-	db.Exec(`DELETE * FROM ROOM_USERS WHERE (id_user==?)`, userId)
+	data, _ := db.Query(`SELECT id, created_by FROM ROOMS WHERE id=(SELECT id_room FROM ROOM_USERS WHERE id_user=?)`, userId)
+	defer db.Close()
+	var created_by int
+	var id int
+	for data.Next() {
+		data.Scan(&id, &created_by)
+	}
+	if created_by == userId && GetNumberOfPlayerFromRoom(db, id) > 1 {
+		giveLead(db, id, created_by)
+	} else if created_by == userId && GetNumberOfPlayerFromRoom(db, id) == 1 {
+		DelRoom(db, id)
+	}
+	db.Exec(`DELETE FROM ROOM_USERS WHERE id_user=?`, userId)
 }
 
 func DelRoom(db *sql.DB, roomId int) {
 	db.Exec(`DELETE * FROM ROOM_USERS WHERE (id_room==?)`, roomId)
+	db.Exec(`DELETE * FROM ROOMS WHERE (id==?)`, roomId)
 }
 
 func GetNumberOfPlayerFromRoom(db *sql.DB, roomId int) int {
@@ -186,7 +226,8 @@ func LoggingIn(db *sql.DB, prompt string, password string) (ConnectedUser, strin
 	var pass string
 	var data *sql.Rows
 	var err error
-	if govalidator.IsEmail(prompt) {
+	ret, _ := verifier.Verify(prompt)
+	if ret.Syntax.Valid {
 		data, err = db.Query(`SELECT id, Username, password FROM USER WHERE (email==?)`, prompt)
 		if err != nil {
 			log.Fatal(err)
@@ -207,6 +248,11 @@ func LoggingIn(db *sql.DB, prompt string, password string) (ConnectedUser, strin
 		return user, ""
 	}
 	return errBis, "Incorrect password."
+}
+
+func LogOut() ConnectedUser {
+	var user ConnectedUser
+	return user
 }
 
 func GetUserById(db *sql.DB, id int) ConnectedUser {
@@ -297,16 +343,16 @@ func checkUsername(db *sql.DB, Username string) string {
 	if len(Username) < 3 {
 		return "Invalid Length, must be greater than 3."
 	}
-	for i := range Username {
-		if string(Username[i]) == "@" {
-			return "Invalid username, '@' is not a supported character"
-		}
+	ret, _ := verifier.Verify(Username)
+	if ret.Syntax.Valid {
+		return "The username can't be a mail address."
 	}
 	return ""
 }
 
 func checkMail(db *sql.DB, email string) string {
-	if !govalidator.IsEmail(email) {
+	ret, _ := verifier.Verify(email)
+	if !ret.Syntax.Valid {
 		return "Not a valid adress."
 	} else {
 		rows, err := db.Query(`SELECT email FROM USER WHERE (email==?)`, email)
