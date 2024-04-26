@@ -1,7 +1,7 @@
 package main
 
 import (
-	"groupie/Go/databaseManager"
+	"groupie/src/databaseManager"
 	"html/template"
 	"log"
 	"net/http"
