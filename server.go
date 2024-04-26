@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"groupie/src/databaseManager"
 	"html/template"
 	"log"
@@ -36,7 +35,7 @@ func Create(w http.ResponseWriter, r *http.Request, RegisterVar databaseManager.
 
 func Login(w http.ResponseWriter, r *http.Request, LoginVar databaseManager.User) {
 
-	template, err := template.ParseFiles("./login.html")
+	template, err := template.ParseFiles("./signin.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,9 +43,7 @@ func Login(w http.ResponseWriter, r *http.Request, LoginVar databaseManager.User
 }
 
 func Action(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databaseManager.ConnectedUser) {
-	fmt.Println("TA MERE AXEL")
 	r.ParseForm()
-	fmt.Println("TA MERE AXEL")
 	if r.URL.Path == "/Register" {
 		user := databaseManager.User{
 			Username: r.FormValue("username"),
@@ -55,15 +52,20 @@ func Action(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databaseMa
 		}
 		databaseManager.CreateNewUser(db, user)
 	} else if r.URL.Path == "/Login" {
-		inputUsername := r.FormValue("username")
-		inputPassword := r.FormValue("password")
-		userTry, err := databaseManager.LoggingIn(db, inputUsername, inputPassword)
-		if err == "" {
-			user.Id = userTry.Id
-			user.Username = userTry.Username
-		}
+
 	}
-	http.Redirect(w, r, "/Gamepage", http.StatusSeeOther)
+}
+
+func TryLogin(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databaseManager.ConnectedUser) {
+	r.ParseForm()
+	inputUsername := r.FormValue("floatingInput")
+	inputPassword := r.FormValue("floatingPassword")
+	userTry, err := databaseManager.LoggingIn(db, inputUsername, inputPassword)
+	if err == "" {
+		user.Id = userTry.Id
+		user.Username = userTry.Username
+		http.Redirect(w, r, "/Gamepage", http.StatusSeeOther)
+	}
 }
 
 func main() {
@@ -77,7 +79,7 @@ func main() {
 		Login(w, r, databaseManager.User{})
 	})
 	http.HandleFunc("/EAction", func(w http.ResponseWriter, r *http.Request) {
-		Action(w, r, databaseManager.InitDatabase("SQL/database.db"), &user)
+		TryLogin(w, r, databaseManager.InitDatabase("SQL/database.db"), &user)
 	})
 	fs := http.FileServer(http.Dir("./server/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
