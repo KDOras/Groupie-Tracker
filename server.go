@@ -44,6 +44,7 @@ func Login(w http.ResponseWriter, r *http.Request, LoginVar databaseManager.User
 }
 
 func Action(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databaseManager.ConnectedUser) {
+	fmt.Println("TA MERE AXEL")
 	r.ParseForm()
 	fmt.Println("TA MERE AXEL")
 	if r.Method == "post" {
@@ -74,7 +75,7 @@ func main() {
 	http.HandleFunc("/Login", func(w http.ResponseWriter, r *http.Request) {
 		Login(w, r, databaseManager.User{})
 	})
-	http.HandleFunc("/Action", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/EAction", func(w http.ResponseWriter, r *http.Request) {
 		Action(w, r, databaseManager.InitDatabase("SQL/database.db"), &user)
 	})
 	fs := http.FileServer(http.Dir("./server/"))

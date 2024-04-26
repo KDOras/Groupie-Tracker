@@ -9,15 +9,17 @@
   <body>
     <div class="container">
       <div class="title">Login</div>
-      <div class="form-group">
-        <label for="username">Address / Username :</label>
-        <input type="text" id="username" />
-      </div>
-      <div class="form-group">
-        <label for="password">Password :</label>
-        <input type="password" id="password" />
-      </div>
-      <button action="/Action" method="post">Login</button>
+      <form action="/EAction" method="post">
+        <div class="form-group">
+          <label for="username">Address / Username :</label>
+        </div>
+        <input type="text" name="username" placeholder="Username" required>
+        <div class="form-group">
+          <label for="password">Password :</label>
+        </div>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+    </form>
     </div>
   </body>
 </html>
