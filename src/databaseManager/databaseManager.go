@@ -220,7 +220,7 @@ func getGame(db *sql.DB, id int) GameMode {
 
 // Region Start - User
 
-func LoggingIn(db *sql.DB, prompt string, password string) (ConnectedUser, string) {
+func LoggingIn(db *sql.DB, prompt string, password string) (*ConnectedUser, string) {
 	var user ConnectedUser
 	var errBis ConnectedUser
 	var pass string
@@ -242,12 +242,12 @@ func LoggingIn(db *sql.DB, prompt string, password string) (ConnectedUser, strin
 		data.Scan(&user.Id, &user.Username, &pass)
 	}
 	if user.Username == "" {
-		return errBis, "No user with this username found."
+		return &errBis, "No user with this username found."
 	}
 	if pass == password {
-		return user, ""
+		return &user, ""
 	}
-	return errBis, "Incorrect password."
+	return &errBis, "Incorrect password."
 }
 
 func LogOut() ConnectedUser {
