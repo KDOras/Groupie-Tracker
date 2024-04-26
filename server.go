@@ -46,19 +46,20 @@ func Login(w http.ResponseWriter, r *http.Request, LoginVar databaseManager.User
 func Action(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databaseManager.ConnectedUser) {
 	r.ParseForm()
 	fmt.Println("TA MERE AXEL")
-	if r.Method == "post" {
-		if r.URL.Path == "/Register" {
-			user := databaseManager.User{
-				Username: r.FormValue("username"),
-				Password: r.FormValue("password"),
-				Email:    r.FormValue("email"),
-			}
-			databaseManager.CreateNewUser(db, user)
-		} else if r.URL.Path == "/Login" {
-			inputUsername := r.FormValue("username")
-			inputPassword := r.FormValue("password")
-			user, _ = databaseManager.LoggingIn(db, inputUsername, inputPassword)
-			fmt.Println(user.Username)
+	if r.URL.Path == "/Register" {
+		user := databaseManager.User{
+			Username: r.FormValue("username"),
+			Password: r.FormValue("password"),
+			Email:    r.FormValue("email"),
+		}
+		databaseManager.CreateNewUser(db, user)
+	} else if r.URL.Path == "/Login" {
+		inputUsername := r.FormValue("username")
+		inputPassword := r.FormValue("password")
+		userTry, err := databaseManager.LoggingIn(db, inputUsername, inputPassword)
+		if err == "" {
+			user.Id = userTry.Id
+			user.Username = userTry.Username
 		}
 	}
 	http.Redirect(w, r, "/Gamepage", http.StatusSeeOther)
