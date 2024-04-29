@@ -12,17 +12,18 @@
       <form action="/sign">
         <div class="form-group">
           <label for="pseudo">Pseudo :</label>
-          <input type="text" id="pseudo" />
+          <input type="text" name="username" id="username" />
         </div>
         <div class="form-group">
           <label for="email">Mail Address :</label>
-          <input type="text" id="email" />
+          <input type="text" name="email" id="email" />
         </div>
         <div class="form-group">
           <label for="password">Password :</label>
-          <input type="password" id="password" />
+          <input type="password" name="password" id="password" />
         </div>
         <button type="submit">Register</button>
+        <div>{{.Err}}</div>
       </form>
     </div>
   </body>

@@ -220,7 +220,7 @@ func getGame(db *sql.DB, id int) GameMode {
 
 // Region Start - User
 
-func LoggingIn(db *sql.DB, prompt string, password string) (ConnectedUser, string) {
+func LoginIn(db *sql.DB, prompt string, password string) (ConnectedUser, string) {
 	var user ConnectedUser
 	var errBis ConnectedUser
 	var pass string
@@ -341,7 +341,7 @@ func checkUsername(db *sql.DB, Username string) string {
 		return "This Username is already used."
 	}
 	if len(Username) < 3 {
-		return "Invalid Length, must be greater than 3."
+		return "Invalid username, length must be greater than 3."
 	}
 	ret, _ := verifier.Verify(Username)
 	if ret.Syntax.Valid {
