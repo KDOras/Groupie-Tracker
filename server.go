@@ -2,11 +2,19 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"groupie/src/databaseManager"
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/context"
+	"github.com/gorilla/sessions"
 )
+
+var tpl *template.Template
+
+var store = sessions.NewCookieStore([]byte("super-secret-password"))
 
 type Err struct {
 	Err string
@@ -20,12 +28,15 @@ func Home(w http.ResponseWriter, r *http.Request) {
 	template.Execute(w, nil)
 }
 
-func GamePage(w http.ResponseWriter, r *http.Request, user *databaseManager.ConnectedUser) {
+func GamePage(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session-name")
+	username := session.Values["Username"]
+	fmt.Println(username)
 	template, err := template.ParseFiles("./gamepage.html")
 	if err != nil {
 		log.Fatal(err)
 	}
-	template.Execute(w, user)
+	template.Execute(w, username)
 }
 
 func Create(w http.ResponseWriter, r *http.Request, logErr *Err) {
@@ -54,7 +65,8 @@ func Login(w http.ResponseWriter, r *http.Request, logErr *Err) {
 	}
 }
 
-func TrySignIn(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databaseManager.ConnectedUser, dbErr *Err) {
+func TrySignIn(w http.ResponseWriter, r *http.Request, db *sql.DB, dbErr *Err) {
+	user := databaseManager.ConnectedUser{}
 	r.ParseForm()
 	err := databaseManager.CreateNewUser(db, databaseManager.User{Username: r.FormValue("username"), Password: r.FormValue("password"), Email: r.FormValue("email")})
 	if err == "" {
@@ -62,6 +74,10 @@ func TrySignIn(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databas
 		if err == "" {
 			user.Id = userTry.Id
 			user.Username = userTry.Username
+			session, _ := store.Get(r, "SessionName")
+			session.Options.MaxAge = 87600 * 7
+			session.Values["User"] = user
+			session.Save(r, w)
 			http.Redirect(w, r, "/Gamepage", http.StatusSeeOther)
 		}
 	} else {
@@ -70,12 +86,21 @@ func TrySignIn(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databas
 	}
 }
 
-func TryLogin(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databaseManager.ConnectedUser, dbErr *Err) {
+func TryLogin(w http.ResponseWriter, r *http.Request, db *sql.DB, dbErr *Err) {
+	session, _ := store.Get(r, "session-name")
+	session.Options = &sessions.Options{Path: "/", MaxAge: 86400 * 7, HttpOnly: true}
+	user := databaseManager.ConnectedUser{}
 	r.ParseForm()
 	userTry, err := databaseManager.LoginIn(db, r.FormValue("username"), r.FormValue("password"))
 	if err == "" {
 		user.Id = userTry.Id
 		user.Username = userTry.Username
+		session.Values["User-Id"] = user.Id
+		session.Values["Username"] = user.Username
+		err := session.Save(r, w)
+		if err != nil {
+			log.Fatal(err)
+		}
 		http.Redirect(w, r, "/Gamepage", http.StatusSeeOther)
 	} else {
 		dbErr.Err = err
@@ -84,12 +109,10 @@ func TryLogin(w http.ResponseWriter, r *http.Request, db *sql.DB, user *database
 }
 
 func main() {
-	user := databaseManager.ConnectedUser{}
+	tpl, _ = template.ParseGlob("*.html")
 	dbErr := Err{Err: ""}
 	http.HandleFunc("/", Home)
-	http.HandleFunc("/Gamepage", func(w http.ResponseWriter, r *http.Request) {
-		GamePage(w, r, &user)
-	})
+	http.HandleFunc("/Gamepage", GamePage)
 	http.HandleFunc("/Register", func(w http.ResponseWriter, r *http.Request) {
 		Create(w, r, &dbErr)
 	})
@@ -97,12 +120,12 @@ func main() {
 		Login(w, r, &dbErr)
 	})
 	http.HandleFunc("/log", func(w http.ResponseWriter, r *http.Request) {
-		TryLogin(w, r, databaseManager.InitDatabase("SQL/database.db"), &user, &dbErr)
+		TryLogin(w, r, databaseManager.InitDatabase("SQL/database.db"), &dbErr)
 	})
 	http.HandleFunc("/sign", func(w http.ResponseWriter, r *http.Request) {
-		TrySignIn(w, r, databaseManager.InitDatabase("SQL/database.db"), &user, &dbErr)
+		TrySignIn(w, r, databaseManager.InitDatabase("SQL/database.db"), &dbErr)
 	})
 	fs := http.FileServer(http.Dir("./server/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", context.ClearHandler(http.DefaultServeMux))
 }

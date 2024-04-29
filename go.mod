@@ -7,9 +7,14 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.22
 )
 
+require github.com/gorilla/securecookie v1.1.2 // indirect
+
 require (
 	github.com/AfterShip/email-verifier v1.4.0 // indirect
 	github.com/golang/protobuf v1.2.0 // indirect
+	github.com/gorilla/context v1.1.2
+	github.com/gorilla/mux v1.8.1 // indirect
+	github.com/gorilla/sessions v1.2.2
 	github.com/hbollon/go-edlib v1.6.0 // indirect
 	github.com/zmb3/spotify v1.3.0 // indirect
 	golang.org/x/net v0.24.0 // indirect
