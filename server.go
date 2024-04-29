@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"groupie/src/databaseManager"
 	"html/template"
 	"log"
@@ -36,19 +35,20 @@ func Create(w http.ResponseWriter, r *http.Request, logErr *Err) {
 	}
 	if logErr.Err != "" {
 		template.Execute(w, logErr)
+		*logErr = Err{}
 	} else {
 		template.Execute(w, r)
 	}
 }
 
 func Login(w http.ResponseWriter, r *http.Request, logErr *Err) {
-
 	template, err := template.ParseFiles("./login.html")
 	if err != nil {
 		log.Fatal(err)
 	}
 	if logErr.Err != "" {
 		template.Execute(w, logErr)
+		*logErr = Err{}
 	} else {
 		template.Execute(w, r)
 	}
@@ -57,7 +57,6 @@ func Login(w http.ResponseWriter, r *http.Request, logErr *Err) {
 func TrySignIn(w http.ResponseWriter, r *http.Request, db *sql.DB, user *databaseManager.ConnectedUser, dbErr *Err) {
 	r.ParseForm()
 	err := databaseManager.CreateNewUser(db, databaseManager.User{Username: r.FormValue("username"), Password: r.FormValue("password"), Email: r.FormValue("email")})
-	fmt.Println(r.FormValue("username"))
 	if err == "" {
 		userTry, err := databaseManager.LoginIn(db, r.FormValue("username"), r.FormValue("password"))
 		if err == "" {

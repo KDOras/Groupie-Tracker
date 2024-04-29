@@ -15,6 +15,23 @@ body {
   background-color: #f1f1f1;
 }
 
+.errText{
+  transform: translate(0px, -250px);
+}
+
+.errText2{
+  transform: translate(0px, -150px);
+}
+
+.errText3{
+  transform: translate(0px, -355px);
+}
+
+.errText3-bis{
+  transform: translate(0px, -355px);
+  font-size: 13px;
+}
+
 .container {
   width: 100%;
   max-width: 400px;
@@ -71,7 +88,7 @@ body {
   color: #333;
 }
 
-a {
+button {
   display: inline-block;
   background-color: #333;
   color: #fff;
@@ -86,18 +103,18 @@ a {
   border-radius: 5px;
 }
 
-a:hover {
+button:hover {
   background-color: #fff;
   color: #333;
   border: 1px solid #333;
 }
 
-a span {
+button span {
   position: absolute;
   display: block;
 }
 
-a span:nth-child(1) {
+button span:nth-child(1) {
   top: 0;
   left: -100%;
   width: 100%;
@@ -116,7 +133,7 @@ a span:nth-child(1) {
   }
 }
 
-a span:nth-child(2) {
+button span:nth-child(2) {
   top: -100%;
   right: 0;
   width: 2px;
@@ -136,7 +153,7 @@ a span:nth-child(2) {
   }
 }
 
-a span:nth-child(3) {
+button span:nth-child(3) {
   bottom: 0;
   right: -100%;
   width: 100%;
@@ -156,7 +173,7 @@ a span:nth-child(3) {
   }
 }
 
-a span:nth-child(4) {
+button span:nth-child(4) {
   bottom: -100%;
   left: 0;
   width: 2px;

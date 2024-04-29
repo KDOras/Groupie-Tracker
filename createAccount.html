@@ -18,7 +18,7 @@
     <div class="container">
       <div class="login-box">
         <h2>Sign Up</h2>
-        <form action="" method="post">
+        <form action="/sign" method="post">
           <div class="user-box">
             <input type="text" name="username" required />
             <label>Username</label>
@@ -32,22 +32,41 @@
             <label>Password</label>
             <span class="password-toggle-icon"><i class="fas fa-eye"></i></span>
           </div>
-          <a href="#" onclick="submitForm()">
+          <button>
             <span></span>
             <span></span>
             <span></span>
             <span></span>
             Submit
-          </a>
+          </button>
         </form>
-        <a href="/Login">Already have an account?</a>
+        <button>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Already Registered?
+        </button>
+        {{if or (eq .Err "This Username is already used.") (eq .Err "The username can't be a mail address.")}}
+        <div class="errText3">{{.Err}}</div>
+        {{end}}
+        {{if eq .Err "Invalid username, length must be greater than 3."}}
+        <div class="errText3-bis">{{.Err}}</div>
+        {{end}}
+        {{if or (eq .Err "Not a valid adress.") (eq .Err "This mail address is already used.")}}
+        <div class="errText">{{.Err}}</div>
+        {{end}}
+        {{if or (eq .Err "This password is too short, must be atleast 12 characters.")
+                (eq .Err "This password doesn't contain uppercase.")
+                (eq .Err "This password doesn't contain lowercase.")
+                (eq .Err "This password doesn't contain number.")
+                (eq .Err "This password doesn't contain special character.")
+        }}
+        <div class="errText2">{{.Err}}</div>
+        {{end}}
       </div>
     </div>
     <script>
-      function submitForm() {
-        document.querySelector("form").submit();
-      }
-
       const passwordField = document.getElementById("password");
       const togglePassword = document.querySelector(".password-toggle-icon i");
 
