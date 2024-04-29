@@ -3,28 +3,65 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Create Account</title>
-    <link href="/static/style3.css" rel="stylesheet" type="text/css" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Sign Up Page</title>
+    <link rel="stylesheet" href="/static/log.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
   </head>
   <body>
     <div class="container">
-      <div class="title">Create Account</div>
-      <form action="/sign">
-        <div class="form-group">
-          <label for="pseudo">Pseudo :</label>
-          <input type="text" name="username" id="username" />
-        </div>
-        <div class="form-group">
-          <label for="email">Mail Address :</label>
-          <input type="text" name="email" id="email" />
-        </div>
-        <div class="form-group">
-          <label for="password">Password :</label>
-          <input type="password" name="password" id="password" />
-        </div>
-        <button type="submit">Register</button>
-        <div>{{.Err}}</div>
-      </form>
+      <div class="login-box">
+        <h2>Sign Up</h2>
+        <form action="" method="post">
+          <div class="user-box">
+            <input type="text" name="username" required />
+            <label>Username</label>
+          </div>
+          <div class="user-box">
+            <input type="text" name="email" required />
+            <label>Email</label>
+          </div>
+          <div class="user-box">
+            <input type="password" name="password" id="password" required />
+            <label>Password</label>
+            <span class="password-toggle-icon"><i class="fas fa-eye"></i></span>
+          </div>
+          <a href="#" onclick="submitForm()">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Submit
+          </a>
+        </form>
+        <a href="/Login">Already have an account?</a>
+      </div>
     </div>
+    <script>
+      function submitForm() {
+        document.querySelector("form").submit();
+      }
+
+      const passwordField = document.getElementById("password");
+      const togglePassword = document.querySelector(".password-toggle-icon i");
+
+      togglePassword.addEventListener("click", function () {
+        if (passwordField.type === "password") {
+          passwordField.type = "text";
+          togglePassword.classList.remove("fa-eye");
+          togglePassword.classList.add("fa-eye-slash");
+        } else {
+          passwordField.type = "password";
+          togglePassword.classList.remove("fa-eye-slash");
+          togglePassword.classList.add("fa-eye");
+        }
+      });
+    </script>
   </body>
 </html>
