@@ -133,6 +133,7 @@ func TryLogin(w http.ResponseWriter, r *http.Request, db *sql.DB, dbErr *Err) {
 func GoDisco(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "session-name")
 	session.Options.MaxAge = -1
+	session.Save(r, w)
 	http.Redirect(w, r, "/Login", http.StatusSeeOther)
 }
 

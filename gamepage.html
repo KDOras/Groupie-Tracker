@@ -18,16 +18,30 @@
       <div class="SidePanel">
         <div>Connected as {{.Username}}</div>
         <form action="/Settings" method="post">
-          <button>Settings</button>
+          <button class="panelButton" id="settingsButton">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Settings
+          </button>
         </form>
         <form action="/disconnect" method="post">
-          <button>Disconnect</button>
+          <button class="panelButton">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Disconnect
+          </button>
         </form>
       </div>
       {{end}}
     </div>
-    <button>BlindTest</button>
-    <button>DevTest</button>
-    <button>Scattergories</button>
+    <div class="GameButtonPanel">
+      <button class="GameButton" id="GB1">BlindTest</button>
+      <button class="GameButton" id="GB2">DevTest</button>
+      <button class="GameButton" id="GB3">Scattergories</button>
+    </div>
   </body>
 </html>

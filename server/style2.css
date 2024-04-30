@@ -8,8 +8,10 @@
   background-color: #7fffd4;
 }
 
-body {
+html, body {
   margin: 0;
+  background: radial-gradient(circle, rgb(234, 234, 234) 0%, rgb(35, 35, 35) 100%);
+  height: 100%;
 }
 
 header {
@@ -18,15 +20,157 @@ header {
   font-size: 250%;
 }
 
+.GameButton {
+  color: whitesmoke;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', 'Arial', 'sans-serif';
+  padding: 14px 20px;
+  margin: 8px 0;
+  cursor: pointer;
+  width: 100%;
+}
+
+.SidePanel{
+  background-color: whitesmoke;
+  width: 200px;
+  height: 115px;
+}
+
+#settingsButton{
+  transform: translate(35px, 10px);
+}
+
+.panelButton {
+  transform: translate(35px, 15px);
+  width: 130px;
+  display: inline-block;
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 10px;
+  text-transform: uppercase;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: 0.5s;
+  letter-spacing: 2px;
+  border-radius: 5px;
+}
+
+.panelButton:hover {
+  background-color: #fff;
+  color: #333;
+  border: 1px solid #333;
+}
+
+.panelButton span {
+  position: absolute;
+  display: block;
+}
+
+.panelButton span:nth-child(1) {
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 2px;
+  background-color: #333;
+  animation: animate1 1s linear infinite;
+}
+
+@keyframes animate1 {
+  0% {
+    left: -100%;
+  }
+  50%,
+  100% {
+    left: 100%;
+  }
+}
+
+.panelButton span:nth-child(2) {
+  top: -100%;
+  right: 0;
+  width: 2px;
+  height: 100%;
+  background-color: #333;
+  animation: animate2 1s linear infinite;
+  animation-delay: 0.25s;
+}
+
+@keyframes animate2 {
+  0% {
+    top: -100%;
+  }
+  50%,
+  100% {
+    top: 100%;
+  }
+}
+
+.panelButton span:nth-child(3) {
+  bottom: 0;
+  right: -100%;
+  width: 100%;
+  height: 2px;
+  background-color: #333;
+  animation: animate3 1s linear infinite;
+  animation-delay: 0.5s;
+}
+
+@keyframes animate3 {
+  0% {
+    right: -100%;
+  }
+  50%,
+  100% {
+    right: 100%;
+  }
+}
+
+.panelButton span:nth-child(4) {
+  bottom: -100%;
+  left: 0;
+  width: 2px;
+  height: 100%;
+  background-color: #333;
+  animation: animate4 1s linear infinite;
+  animation-delay: 0.75s;
+}
+
+@keyframes animate4 {
+  0% {
+    bottom: -100%;
+  }
+  50%,
+  100% {
+    bottom: 100%;
+  }
+}
+
 .CoAsText {
   width: 35px;
   height: 35px;
   border-radius: 50%;
+  cursor:pointer;
 }
 
 .profileDiv{
   display: flex;
-  justify-content: flex-end;
+  flex-direction: row-reverse;
+  justify-content: flex-start;
   transform: translate(-2px, 2px);
+}
+
+#GB1 {
+  background-color: #1cce22;
+  border-color: #0b560e;
+  
+}
+#GB2 {
+  background-color: #ff1100;
+  border-color: #5d0600;
+}
+#GB3 {
+  background-color: #0060ba;
+  border-color: #00284d;
 }
 
