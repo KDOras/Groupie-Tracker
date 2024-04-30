@@ -8,8 +8,10 @@
   background-color: #7fffd4;
 }
 
-body {
+html, body {
   margin: 0;
+  background: radial-gradient(circle, rgb(234, 234, 234) 0%, rgb(35, 35, 35) 100%);
+  height: 100%;
 }
 
 header {
@@ -18,15 +20,39 @@ header {
   font-size: 250%;
 }
 
+.GameButton {
+  color: whitesmoke;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', 'Arial', 'sans-serif';
+  padding: 14px 20px;
+  margin: 8px 0;
+  cursor: pointer;
+  width: 100%;
+}
+
 .CoAsText {
   width: 35px;
   height: 35px;
   border-radius: 50%;
+  cursor:pointer;
 }
 
 .profileDiv{
   display: flex;
   justify-content: flex-end;
   transform: translate(-2px, 2px);
+}
+
+#GB1 {
+  background-color: #1cce22;
+  border-color: #0b560e;
+  
+}
+#GB2 {
+  background-color: #ff1100;
+  border-color: #5d0600;
+}
+#GB3 {
+  background-color: #0060ba;
+  border-color: #00284d;
 }
 
