@@ -17,3 +17,11 @@ header {
   height: 100px;
   font-size: 250%;
 }
+
+.CoAsText {
+  width: 35px;
+  height: 35px;
+  transform: translate(1450px, 20px);
+  border-radius: 50%;
+}
+
