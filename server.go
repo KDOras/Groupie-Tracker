@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"groupie/src/databaseManager"
 	"html/template"
 	"log"
@@ -31,7 +30,6 @@ func Home(w http.ResponseWriter, r *http.Request) {
 func GamePage(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "session-name")
 	username := session.Values["Username"]
-	fmt.Println(username)
 	template, err := template.ParseFiles("./gamepage.html")
 	if err != nil {
 		log.Fatal(err)
