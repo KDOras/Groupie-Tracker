@@ -36,13 +36,15 @@
             Submit
           </button>
         </form>
-        <button>
+        <form action="/Register" method="post">
+          <button>
             <span></span>
             <span></span>
             <span></span>
             <span></span>
             no account ?
         </button>
+        </form>
         {{if eq .Err "No user with this username found."}}
         <div class="errText">{{.Err}}</div>
         {{end}}

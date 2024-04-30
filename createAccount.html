@@ -40,13 +40,15 @@
             Submit
           </button>
         </form>
-        <button>
+        <form action="/Login" method="post">
+          <button>
             <span></span>
             <span></span>
             <span></span>
             <span></span>
             Already Registered?
-        </button>
+          </button>
+        </form>
         {{if or (eq .Err "This Username is already used.") (eq .Err "The username can't be a mail address.")}}
         <div class="errText3">{{.Err}}</div>
         {{end}}
