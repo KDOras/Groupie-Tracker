@@ -21,7 +21,12 @@ header {
 .CoAsText {
   width: 35px;
   height: 35px;
-  transform: translate(1450px, 20px);
   border-radius: 50%;
+}
+
+.profileDiv{
+  display: flex;
+  justify-content: flex-end;
+  transform: translate(-2px, 2px);
 }
 

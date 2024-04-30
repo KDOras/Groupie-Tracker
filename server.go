@@ -19,6 +19,10 @@ type Err struct {
 	Err string
 }
 
+type GamePageVar struct {
+	IsSidePanelOpen bool
+}
+
 func Home(w http.ResponseWriter, r *http.Request) {
 	template, err := template.ParseFiles("./index.html")
 	if err != nil {
