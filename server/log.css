@@ -15,19 +15,19 @@ body {
   background-color: #f1f1f1;
 }
 
-.errText{
+.errText {
   transform: translate(0px, -250px);
 }
 
-.errText2{
+.errText2 {
   transform: translate(0px, -150px);
 }
 
-.errText3{
+.errText3 {
   transform: translate(0px, -355px);
 }
 
-.errText3-bis{
+.errText3-bis {
   transform: translate(0px, -355px);
   font-size: 13px;
 }
@@ -191,6 +191,32 @@ button span:nth-child(4) {
   100% {
     bottom: 100%;
   }
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.stay-logged-in {
+  display: flex;
+  align-items: center;
+}
+
+.stay-logged-in input[type="checkbox"] {
+  margin-right: 5px;
+}
+
+.stay-logged-in label {
+  font-size: 14px;
+  color: #333;
 }
 
 .password-toggle-icon {
