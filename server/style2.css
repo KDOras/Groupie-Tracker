@@ -44,15 +44,30 @@ header {
 
 #GB1 {
   background-color: #1cce22;
-  border-color: #0b560e;
+  border-color: #1f5b21;
   
+}
+#GB1:hover {
+  background-color: #56cd5a;
+  border-color: #326334;
+  box-shadow: black 0px 0px 10px;
 }
 #GB2 {
   background-color: #ff1100;
   border-color: #5d0600;
 }
+#GB2:hover {
+  background-color: #ff6d63;
+  border-color: #5c2b27;
+  box-shadow: black 0px 0px 20px;
+}
 #GB3 {
   background-color: #0060ba;
   border-color: #00284d;
+}
+#GB3:hover {
+  background-color: #4683bc;
+  border-color: #253d53;
+  box-shadow: black 0px 0px 10px;
 }
 
