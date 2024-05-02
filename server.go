@@ -20,7 +20,8 @@ type Err struct {
 }
 
 type GamePageVar struct {
-	IsSidePanelOpen bool
+	IsSidePanelOpen interface{}
+	Username        interface{}
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
@@ -33,12 +34,31 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 func GamePage(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "session-name")
-	username := session.Values["Username"]
+	pageVar := GamePageVar{Username: session.Values["Username"], IsSidePanelOpen: session.Values["IsSidePanelOpen"]}
 	template, err := template.ParseFiles("./gamepage.html")
 	if err != nil {
 		log.Fatal(err)
 	}
-	template.Execute(w, username)
+	session.Save(r, w)
+	if session.Values["IsSidePanelOpen"] == true && session.Values["KeepSidePanelOpen"] == false {
+		http.Redirect(w, r, "/openProfile", http.StatusSeeOther)
+	} else {
+		session.Values["KeepSidePanelOpen"] = false
+		session.Save(r, w)
+		template.Execute(w, pageVar)
+	}
+}
+
+func OpenSidePanel(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session-name")
+	if session.Values["IsSidePanelOpen"] == false {
+		session.Values["IsSidePanelOpen"] = true
+		session.Values["KeepSidePanelOpen"] = true
+	} else {
+		session.Values["IsSidePanelOpen"] = false
+	}
+	session.Save(r, w)
+	http.Redirect(w, r, "/Gamepage", http.StatusSeeOther)
 }
 
 func Create(w http.ResponseWriter, r *http.Request, logErr *Err) {
@@ -110,6 +130,13 @@ func TryLogin(w http.ResponseWriter, r *http.Request, db *sql.DB, dbErr *Err) {
 	}
 }
 
+func GoDisco(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session-name")
+	session.Options.MaxAge = -1
+	session.Save(r, w)
+	http.Redirect(w, r, "/Login", http.StatusSeeOther)
+}
+
 func main() {
 	tpl, _ = template.ParseGlob("*.html")
 	dbErr := Err{Err: ""}
@@ -126,6 +153,12 @@ func main() {
 	})
 	http.HandleFunc("/sign", func(w http.ResponseWriter, r *http.Request) {
 		TrySignIn(w, r, databaseManager.InitDatabase("SQL/database.db"), &dbErr)
+	})
+	http.HandleFunc("/disconnect", func(w http.ResponseWriter, r *http.Request) {
+		GoDisco(w, r)
+	})
+	http.HandleFunc("/openProfile", func(w http.ResponseWriter, r *http.Request) {
+		OpenSidePanel(w, r)
 	})
 	fs := http.FileServer(http.Dir("./server/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))

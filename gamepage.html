@@ -10,9 +10,38 @@
     <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/14HgZVpwQsrpUZfRbCapXC?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe> -->
   </head>
   <body>
-    <div class="profileDiv"><button class="CoAsText">i</button></div>
-    <button class="GameButton" id="GB1">BlindTest</button>
-    <button class="GameButton" id="GB2">DevTest</button>
-    <button class="GameButton" id="GB3">Scattergories</button>
+    <div class="profileDiv">
+      <form action="/openProfile" method="post">
+        <button class="CoAsText">i</button>
+      </form>
+      {{if eq .IsSidePanelOpen true}}
+      <div class="SidePanel">
+        <div>Connected as {{.Username}}</div>
+        <form action="/Settings" method="post">
+          <button class="panelButton" id="settingsButton">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Settings
+          </button>
+        </form>
+        <form action="/disconnect" method="post">
+          <button class="panelButton">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            Disconnect
+          </button>
+        </form>
+      </div>
+      {{end}}
+    </div>
+    <div class="GameButtonPanel">
+      <button class="GameButton" id="GB1">BlindTest</button>
+      <button class="GameButton" id="GB2">DevTest</button>
+      <button class="GameButton" id="GB3">Scattergories</button>
+    </div>
   </body>
 </html>
