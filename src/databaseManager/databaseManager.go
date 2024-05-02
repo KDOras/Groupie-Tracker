@@ -25,12 +25,13 @@ type ConnectedUser struct {
 }
 
 type Room struct {
-	Id        int
-	CreatedBy ConnectedUser
-	MaxPlayer int
-	Name      string
-	Password  string
-	GameMode  GameMode
+	Id             int
+	CreatedBy      ConnectedUser
+	MaxPlayer      int
+	NumberOfPlayer int
+	Name           string
+	Password       string
+	GameMode       GameMode
 }
 
 type GameMode struct {
@@ -125,7 +126,7 @@ func GetRoom(db *sql.DB, id int) Room {
 		data.Scan(&room.Id, &created_by, room.MaxPlayer, room.Name, room.Password, &game)
 	}
 	room.CreatedBy = GetUserById(db, created_by)
-	room.GameMode = getGame(db, game)
+	room.GameMode = GetGame(db, game)
 	return room
 }
 
@@ -204,7 +205,7 @@ func GetNumberOfPlayerFromRoom(db *sql.DB, roomId int) int {
 
 // Region Start - Game Modes
 
-func getGame(db *sql.DB, id int) GameMode {
+func GetGame(db *sql.DB, id int) GameMode {
 	data, err := db.Query(`SELECT * FROM GAMES WHERE (id==?)`, id)
 	if err != nil {
 		log.Fatal(err)

@@ -22,6 +22,7 @@ type Err struct {
 type GamePageVar struct {
 	IsSidePanelOpen interface{}
 	Username        interface{}
+	RoomList        []databaseManager.Room
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
@@ -34,7 +35,17 @@ func Home(w http.ResponseWriter, r *http.Request) {
 
 func GamePage(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "session-name")
-	pageVar := GamePageVar{Username: session.Values["Username"], IsSidePanelOpen: session.Values["IsSidePanelOpen"]}
+	db := databaseManager.InitDatabase("SQL/database.db")
+	data, _ := db.Query("SELECT id, max_player, name, password, id_game FROM ROOMS")
+	roomList := []databaseManager.Room{}
+	for data.Next() {
+		var room databaseManager.Room
+		data.Scan(&room.Id, &room.MaxPlayer, &room.Name, &room.Password, &room.GameMode.Id)
+		room.NumberOfPlayer = databaseManager.GetNumberOfPlayerFromRoom(db, room.Id)
+		room.GameMode = databaseManager.GetGame(db, room.GameMode.Id)
+		roomList = append(roomList, room)
+	}
+	pageVar := GamePageVar{Username: session.Values["Username"], IsSidePanelOpen: session.Values["IsSidePanelOpen"], RoomList: roomList}
 	template, err := template.ParseFiles("./gamepage.html")
 	if err != nil {
 		log.Fatal(err)
