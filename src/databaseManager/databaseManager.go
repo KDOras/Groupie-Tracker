@@ -220,6 +220,21 @@ func getGame(db *sql.DB, id int) GameMode {
 
 // Region Start - User
 
+func ModifyPass(db *sql.DB, userId int, newPass string) string {
+	err := checkPass(newPass)
+	return err
+}
+
+func ModifyUsername(db *sql.DB, userId int, newName string) string {
+	err := checkUsername(db, newName)
+	return err
+}
+
+func ModifyMail(db *sql.DB, userId int, newMail string) string {
+	err := checkMail(db, newMail)
+	return err
+}
+
 func LoginIn(db *sql.DB, prompt string, password string) (ConnectedUser, string) {
 	var user ConnectedUser
 	var errBis ConnectedUser
