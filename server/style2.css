@@ -8,9 +8,14 @@
   background-color: #7fffd4;
 }
 
-html, body {
+html,
+body {
   margin: 0;
-  background: radial-gradient(circle, rgb(234, 234, 234) 0%, rgb(35, 35, 35) 100%);
+  background: radial-gradient(
+    circle,
+    rgb(234, 234, 234) 0%,
+    rgb(35, 35, 35) 100%
+  );
   height: 100%;
 }
 
@@ -22,20 +27,21 @@ header {
 
 .GameButton {
   color: whitesmoke;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', 'Arial', 'sans-serif';
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", "Arial", "sans-serif";
   padding: 14px 20px;
   margin: 8px 0;
   cursor: pointer;
   width: 100%;
 }
 
-.SidePanel{
+.SidePanel {
   background-color: whitesmoke;
   width: 200px;
   height: 115px;
 }
 
-#settingsButton{
+#settingsButton {
   transform: translate(35px, 10px);
 }
 
@@ -150,10 +156,10 @@ header {
   width: 35px;
   height: 35px;
   border-radius: 50%;
-  cursor:pointer;
+  cursor: pointer;
 }
 
-.profileDiv{
+.profileDiv {
   display: flex;
   flex-direction: row-reverse;
   justify-content: flex-start;
@@ -163,7 +169,6 @@ header {
 #GB1 {
   background-color: #1cce22;
   border-color: #1f5b21;
-  
 }
 #GB1:hover {
   background-color: #56cd5a;
@@ -189,3 +194,29 @@ header {
   box-shadow: black 0px 0px 10px;
 }
 
+.roomTab {
+  width: 60%;
+  box-shadow: 0 0 10px black;
+  margin-right: 30px;
+  margin-left: auto;
+  padding: 10px;
+  background-color: white;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  row-gap: 20px;
+}
+
+.room p {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  padding: 10px;
+  border: 1px solid black;
+  background-color: yellow;
+}
+
+.JoinRoom {
+  transform: translate(30px, 25px);
+}
