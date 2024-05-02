@@ -20,8 +20,8 @@ type User struct {
 }
 
 type ConnectedUser struct {
-	Id       int
-	Username string
+	Id       interface{}
+	Username interface{}
 }
 
 type Room struct {
