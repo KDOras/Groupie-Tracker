@@ -148,11 +148,20 @@ func GoDisco(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/Login", http.StatusSeeOther)
 }
 
+func Settings(w http.ResponseWriter, r *http.Request) {
+	template, err := template.ParseFiles("./settings.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	template.Execute(w, nil)
+}
+
 func main() {
 	tpl, _ = template.ParseGlob("*.html")
 	dbErr := Err{Err: ""}
 	http.HandleFunc("/", Home)
 	http.HandleFunc("/Gamepage", GamePage)
+	http.HandleFunc("/Settings", Settings)
 	http.HandleFunc("/Register", func(w http.ResponseWriter, r *http.Request) {
 		Create(w, r, &dbErr)
 	})
