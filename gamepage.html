@@ -44,11 +44,14 @@
       <button class="GameButton" id="GB3">Scattergories</button>
     </div>
     <div class="roomTab">
+      {{range $i := .RoomList}}
       <div class="room">
-        <p class="roomName">test</p>
-        <p class="numberOfPlayer">0/8</p>
-        <p class="roomGameMode">Blind Test</p>
-      </div>
+        <form action=""></form>
+        <p class="roomName">{{$i.Name}}</br>{{$i.NumberOfPlayer}}/{{$i.MaxPlayer}}</br>{{$i.GameMode.Name}}
+          <button class="JoinRoom" id={{$i.Id}}>Join</button>
+        </p>
+        </form>
     </div>
+    {{end}}
   </body>
 </html>
