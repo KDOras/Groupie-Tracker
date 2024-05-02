@@ -220,3 +220,7 @@ header {
 .JoinRoom {
   transform: translate(30px, 25px);
 }
+
+.HeaderRoom {
+  border: solid black;
+}
