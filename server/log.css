@@ -53,6 +53,21 @@ body {
   text-transform: uppercase;
 }
 
+.settings-box {
+  background-color: rgb(127, 255, 140);
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.settings-box h2 {
+  margin: 0 0 15px;
+  padding: 0;
+  color: #333;
+  text-align: center;
+  text-transform: uppercase;
+}
+
 .user-box {
   position: relative;
   margin-bottom: 30px;
