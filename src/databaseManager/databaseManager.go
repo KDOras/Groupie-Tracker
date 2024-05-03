@@ -132,8 +132,11 @@ func GetRoom(db *sql.DB, id int) Room {
 
 func JoinRoom(db *sql.DB, user ConnectedUser, room Room) string {
 	if !isRoomFull(db, room) {
-		insertIntoRoom_Users(db, room, user)
-		return ""
+		if !IsAlreadyPlaying(db, user) {
+			insertIntoRoom_Users(db, room, user)
+			return ""
+		}
+		return "Someone with the same account is already playing."
 	} else {
 		return "This room is full."
 	}
@@ -148,7 +151,7 @@ func isRoomFull(db *sql.DB, room Room) bool {
 	for data.Next() {
 		n++
 	}
-	return n > room.MaxPlayer
+	return n >= room.MaxPlayer
 }
 
 func giveLead(db *sql.DB, roomId int, actualLead int) (int64, error) {
@@ -220,6 +223,15 @@ func GetGame(db *sql.DB, id int) GameMode {
 // Region End - Game Modes
 
 // Region Start - User
+
+func IsAlreadyPlaying(db *sql.DB, user ConnectedUser) bool {
+	data, _ := db.Query("SELECT id_user FROM ROOM_USERS WHERE id_user=?", user.Id)
+	n := 0
+	for data.Next() {
+		n++
+	}
+	return n > 0
+}
 
 func ModifyPass(db *sql.DB, userId int, newPass string) string {
 	err := checkPass(newPass)
