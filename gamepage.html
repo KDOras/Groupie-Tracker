@@ -42,7 +42,7 @@
       <form action="/BlindTest">
       <button class="GameButton" href="/BlindTest" id="GB1">BlindTest</button>
     </form>
-    <form action="/Deaftest">
+    <form action="/DeafTest">
       <button class="GameButton" href="/DeafTest" id="GB2">DeafTest</button>
     </form>
   <form action="/ScatterGorries">
@@ -52,7 +52,7 @@
     <div class="roomTab">
       {{range $i := .RoomList}}
       <div class="room">
-        <form action=""></form>
+        <form action="/JoinRoom">
         <p class="roomName">{{$i.Name}}</br>{{$i.NumberOfPlayer}}/{{$i.MaxPlayer}}</br>{{$i.GameMode.Name}}
           <button class="JoinRoom" name="JoinButton" value={{$i.Id}}>Join</button>
         </p>
