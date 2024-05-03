@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/context"
 	"github.com/gorilla/sessions"
@@ -57,6 +58,23 @@ func GamePage(w http.ResponseWriter, r *http.Request) {
 		session.Values["KeepSidePanelOpen"] = false
 		session.Save(r, w)
 		template.Execute(w, pageVar)
+	}
+}
+
+func JoinRoom(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session-name")
+	userId := session.Values["User-Id"]
+	username := session.Values["Username"]
+	roomId := r.FormValue("JoinButton")
+	formatizedRoomId, _ := strconv.Atoi(roomId)
+	databaseManager.JoinRoom(databaseManager.InitDatabase("SQL/database.db"), databaseManager.ConnectedUser{Id: userId, Username: username}, databaseManager.GetRoom(databaseManager.InitDatabase("SQL/database.db"), formatizedRoomId))
+	room := databaseManager.GetRoom(databaseManager.InitDatabase("SQL/database.db"), formatizedRoomId)
+	if room.GameMode.Id == 0 {
+		http.Redirect(w, r, "/BlindTest", http.StatusSeeOther)
+	} else if room.GameMode.Id == 1 {
+		http.Redirect(w, r, "/DeafTest", http.StatusSeeOther)
+	} else if room.GameMode.Id == 2 {
+		http.Redirect(w, r, "/ScatterGorries", http.StatusSeeOther)
 	}
 }
 
@@ -148,12 +166,28 @@ func GoDisco(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/Login", http.StatusSeeOther)
 }
 
-func Settings(w http.ResponseWriter, r *http.Request) {
-	template, err := template.ParseFiles("./settings.html")
+func BlindTest(w http.ResponseWriter, r *http.Request) {
+	template, err := template.ParseFiles("./blindtest.html")
 	if err != nil {
 		log.Fatal(err)
 	}
-	template.Execute(w, nil)
+	template.Execute(w, r)
+}
+
+func DeafTest(w http.ResponseWriter, r *http.Request) {
+	template, err := template.ParseFiles("./deaftest.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	template.Execute(w, r)
+}
+
+func ScatterGorries(w http.ResponseWriter, r *http.Request) {
+	template, err := template.ParseFiles("./scattergorries.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	template.Execute(w, r)
 }
 
 func main() {
@@ -161,7 +195,10 @@ func main() {
 	dbErr := Err{Err: ""}
 	http.HandleFunc("/", Home)
 	http.HandleFunc("/Gamepage", GamePage)
-	http.HandleFunc("/Settings", Settings)
+	http.HandleFunc("/BlindTest", BlindTest)
+	http.HandleFunc("/DeafTest", DeafTest)
+	http.HandleFunc("/ScatterGorries", ScatterGorries)
+	http.HandleFunc("/JoinRoom", JoinRoom)
 	http.HandleFunc("/Register", func(w http.ResponseWriter, r *http.Request) {
 		Create(w, r, &dbErr)
 	})

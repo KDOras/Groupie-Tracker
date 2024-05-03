@@ -39,9 +39,11 @@
       {{end}}
     </div>
     <div class="GameButtonPanel">
+      <form action="/BlindTest">
       <button class="GameButton" id="GB1">BlindTest</button>
       <button class="GameButton" id="GB2">DevTest</button>
       <button class="GameButton" id="GB3">Scattergories</button>
+    </form>
     </div>
     <div class="roomTab">
       {{range $i := .RoomList}}
