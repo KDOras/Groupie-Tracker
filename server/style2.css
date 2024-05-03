@@ -11,11 +11,7 @@
 html,
 body {
   margin: 0;
-  background: radial-gradient(
-    circle,
-    rgb(234, 234, 234) 0%,
-    rgb(35, 35, 35) 100%
-  );
+  background: linear-gradient(45deg, rgb(57, 40, 57), rgb(78, 6, 126));
   height: 100%;
 }
 

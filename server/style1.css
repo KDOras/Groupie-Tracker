@@ -7,7 +7,7 @@
 }
 
 :root {
-  background-color: #7fffd4;
+  background: linear-gradient(45deg, rgb(57, 40, 57), rgb(78, 6, 126))
 }
 
 .play {
@@ -19,7 +19,7 @@
   color: #fff;
   text-shadow: 1px 1px 1px #000;
   border-radius: 30px;
-  background-color: rgba(255, 0, 0, 1);
+  background-color: rgb(156, 116, 157);
   background-image: linear-gradient(
     to top left,
     rgba(0, 0, 0, 0.2),
@@ -34,7 +34,7 @@
 }
 
 .play:hover {
-  background-color: rgba(255, 0, 0, 1);
+  background-color: rgb(143, 81, 139);
 }
 
 .play:active {
