@@ -32,7 +32,7 @@ header {
 }
 
 .SidePanel {
-  background-color: whitesmoke;
+  background: linear-gradient(45deg, rgb(252, 176, 252), rgb(158, 13, 255));
   width: 200px;
   height: 115px;
 }
@@ -196,7 +196,7 @@ header {
   margin-right: 30px;
   margin-left: auto;
   padding: 10px;
-  background-color: white;
+  background: linear-gradient(45deg, rgb(252, 176, 252), rgb(158, 13, 255));
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -210,7 +210,6 @@ header {
   height: 100px;
   padding: 10px;
   border: 1px solid black;
-  background-color: yellow;
 }
 
 .JoinRoom {
@@ -219,4 +218,14 @@ header {
 
 .HeaderRoom {
   border: solid black;
+}
+
+.room #R0 {
+  background-color: #1cce22;
+}
+.room #R1 {
+  background-color: #ff1100;
+}
+.room #R2{
+  background-color: #0060ba;
 }
