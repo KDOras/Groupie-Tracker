@@ -123,7 +123,7 @@ func GetRoom(db *sql.DB, id int) Room {
 	var created_by int
 	var game int
 	for data.Next() {
-		data.Scan(&room.Id, &created_by, room.MaxPlayer, room.Name, room.Password, &game)
+		data.Scan(&room.Id, &created_by, &room.MaxPlayer, &room.Name, &room.Password, &game)
 	}
 	room.CreatedBy = GetUserById(db, created_by)
 	room.GameMode = GetGame(db, game)
@@ -148,7 +148,7 @@ func isRoomFull(db *sql.DB, room Room) bool {
 	for data.Next() {
 		n++
 	}
-	return n < room.MaxPlayer
+	return n > room.MaxPlayer
 }
 
 func giveLead(db *sql.DB, roomId int, actualLead int) (int64, error) {

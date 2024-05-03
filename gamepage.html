@@ -52,7 +52,7 @@
     <div class="roomTab">
       {{range $i := .RoomList}}
       <div class="room">
-        <form action=""></form>
+        <form action="/JoinRoom">
         <p class="roomName">{{$i.Name}}</br>{{$i.NumberOfPlayer}}/{{$i.MaxPlayer}}</br>{{$i.GameMode.Name}}
           <button class="JoinRoom" name="JoinButton" value={{$i.Id}}>Join</button>
         </p>
