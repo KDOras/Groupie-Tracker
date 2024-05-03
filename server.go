@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"groupie/src/databaseManager"
 	"html/template"
 	"log"
@@ -62,6 +63,7 @@ func GamePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func JoinRoom(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("test")
 	session, _ := store.Get(r, "session-name")
 	userId := session.Values["User-Id"]
 	username := session.Values["Username"]
