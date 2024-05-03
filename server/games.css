@@ -1,42 +1,35 @@
-func BlindTest(w http.ResponseWriter, r *http.Request, logErr *Err) {
-	template, err := template.ParseFiles("./blindtest.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-	if logErr.Err != "" {
-		template.Execute(w, logErr)
-		*logErr = Err{}
-	} else {
-		template.Execute(w, r)
-	}
+:root {
+  font-size: 14pt;
 }
 
-func DeafTest(w http.ResponseWriter, r *http.Request, logErr *Err) {
-	template, err := template.ParseFiles("./deaftest.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-	if logErr.Err != "" {
-		template.Execute(w, logErr)
-		*logErr = Err{}
-	} else {
-		template.Execute(w, r)
-	}
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  max-width: auto;
+  margin: 0 auto;
 }
 
-func ScatterGorries(w http.ResponseWriter, r *http.Request, logErr *Err) {
-	template, err := template.ParseFiles("./scattergorries.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-	if logErr.Err != "" {
-		template.Execute(w, logErr)
-		*logErr = Err{}
-	} else {
-		template.Execute(w, r)
-	}
+.left-side,
+.right-side {
+  flex: 1;
+  padding: 20px;
 }
 
-http.HandleFunc("/BlindTest", BlindTest)
-http.HandleFunc("/DeafTest", DeafTest)
-http.HandleFunc("/ScatterGorries", ScatterGorries)
+.left-side {
+  border-right: 1px solid black;
+  background-color: aquamarine;
+}
+
+.left-side p {
+  text-align: center;
+}
+
+.right-side {
+  border-left: 1px solid black;
+  background-color: red;
+}
+
+.right-side p {
+  text-align: center;
+}
