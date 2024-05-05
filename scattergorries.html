@@ -5,5 +5,29 @@
     <meta charset="utf-8" />
     <link href="/static/games.css" rel="stylesheet" type="text/css" />
   </head>
-  <body></body>
+  <body>
+    <input type="text" id="messageInput" placeholder="Enter a message">
+    <button onclick="sendMessage()">Send Message</button>
+    <div id="output"></div>
+
+    <script>
+        const socket = new WebSocket("ws://localhost:8080/ws");
+
+        socket.onopen = (event) => {
+            console.log("WebSocket connection opened");
+        };
+
+        socket.onmessage = (event) => {
+            const output = document.getElementById("output");
+            output.innerHTML += `<p>Received: ${event.data}</p>`;
+        };
+
+        function sendMessage() {
+            const messageInput = document.getElementById("messageInput");
+            const message = messageInput.value;
+            socket.send(message);
+            messageInput.value = "";
+        }
+    </script>
+</body>
 </html>

@@ -9,11 +9,17 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/context"
 	"github.com/gorilla/sessions"
+	"github.com/gorilla/websocket"
 )
 
-var tpl *template.Template
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+}
 
 var store = sessions.NewCookieStore([]byte("super-secret-password"))
 
@@ -193,14 +199,6 @@ func ScatterGorries(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Expose-Headers", "Content-Type")
-
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-	w.(http.Flusher).Flush()
-
 	template.Execute(w, r)
 }
 
@@ -213,9 +211,9 @@ func Settings(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	tpl, _ = template.ParseGlob("*.html")
 	dbErr := Err{Err: ""}
 	http.HandleFunc("/", Home)
+	http.HandleFunc("/ws", websocketHandler)
 	http.HandleFunc("/Gamepage", GamePage)
 	http.HandleFunc("/Settings", Settings)
 	http.HandleFunc("/BlindTest", BlindTest)
@@ -242,5 +240,28 @@ func main() {
 	})
 	fs := http.FileServer(http.Dir("./server/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
-	http.ListenAndServe(":8080", context.ClearHandler(http.DefaultServeMux))
+	http.ListenAndServe(":8080", nil)
+}
+
+func websocketHandler(w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer conn.Close()
+
+	for {
+		messageType, data, err := conn.ReadMessage()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		fmt.Printf("Receive message: %s\n", data)
+
+		if err := conn.WriteMessage(messageType, data); err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
 }
