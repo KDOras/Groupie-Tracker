@@ -222,10 +222,19 @@ header {
 
 .room #R0 {
   background-color: #1cce22;
+  color: white;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", "Arial", "sans-serif";
 }
 .room #R1 {
   background-color: #ff1100;
+  color: white;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", "Arial", "sans-serif";
 }
 .room #R2{
   background-color: #0060ba;
+  color:white;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", "Arial", "sans-serif";
 }

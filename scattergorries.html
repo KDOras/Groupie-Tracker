@@ -5,5 +5,16 @@
     <meta charset="utf-8" />
     <link href="/static/games.css" rel="stylesheet" type="text/css" />
   </head>
-  <body></body>
+  <body>
+    <h1>ScatterGorrie</h1>
+    <h2>{{.Letter}}</h2>
+    <div class="CategoriesTab">
+    {{range $i := .Categories}}
+      <div class="Category">
+        <p class="CategoryName">{{$i.Name}}</p>
+        <Input id="R{{$i.Categories}}" ></Input>
+      </div>
+    {{end}}
+  </div>
+  </body>
 </html>
