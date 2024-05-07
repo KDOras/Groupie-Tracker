@@ -6,22 +6,15 @@
     <link href="/static/games.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <div class="container">
-      <div class="left-side">
-        <p class="header">GAME RULES</p>
-        <p class="text">
-          <br /><br />
-          This game is a scattergorries game. <br /><br /><br />
-          The goal is to find given references that start with the given letter.
-          <br /><br /><br />
-          Exemple : if the letter is A and the reference is Fruit, you can write
-          Apple or Apricot.<br /><br /><br />
-          The one who won the most pountos at the end of the game win.
-        </p>
+    <h1>ScatterGorrie</h1>
+    <h2>{{.Letter}}</h2>
+    <div class="CategoriesTab">
+    {{range $i := .Categories}}
+      <div class="Category">
+        <p class="CategoryName">{{$i.Name}}</p>
+        <Input id="R{{$i.Categories}}" ></Input>
       </div>
-      <div class="right-side">
-        <p class="gamename">ScatterGorries</p>
-      </div>
-    </div>
+    {{end}}
+  </div>
   </body>
 </html>
