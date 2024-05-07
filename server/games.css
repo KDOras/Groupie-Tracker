@@ -1,19 +1,12 @@
-:root {
-  font-size: 14pt;
-}
-
 .container {
   display: flex;
   height: 100vh;
   width: 100vw;
-  max-width: auto;
-  margin: 0 auto;
 }
 
 .left-side,
 .right-side {
   flex: 1;
-  padding: 20px;
 }
 
 .left-side {
