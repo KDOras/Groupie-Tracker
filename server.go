@@ -63,20 +63,24 @@ func GamePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func JoinRoom(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("test")
 	session, _ := store.Get(r, "session-name")
 	userId := session.Values["User-Id"]
 	username := session.Values["Username"]
 	roomId := r.FormValue("JoinButton")
 	formatizedRoomId, _ := strconv.Atoi(roomId)
-	databaseManager.JoinRoom(databaseManager.InitDatabase("SQL/database.db"), databaseManager.ConnectedUser{Id: userId, Username: username}, databaseManager.GetRoom(databaseManager.InitDatabase("SQL/database.db"), formatizedRoomId))
+	err := databaseManager.JoinRoom(databaseManager.InitDatabase("SQL/database.db"), databaseManager.ConnectedUser{Id: userId, Username: username}, databaseManager.GetRoom(databaseManager.InitDatabase("SQL/database.db"), formatizedRoomId))
 	room := databaseManager.GetRoom(databaseManager.InitDatabase("SQL/database.db"), formatizedRoomId)
-	if room.GameMode.Id == 0 {
-		http.Redirect(w, r, "/BlindTest", http.StatusSeeOther)
-	} else if room.GameMode.Id == 1 {
-		http.Redirect(w, r, "/DeafTest", http.StatusSeeOther)
-	} else if room.GameMode.Id == 2 {
-		http.Redirect(w, r, "/ScatterGorries", http.StatusSeeOther)
+	fmt.Println(err)
+	if err == "" {
+		if room.GameMode.Id == 0 {
+			http.Redirect(w, r, "/BlindTest", http.StatusSeeOther)
+		} else if room.GameMode.Id == 1 {
+			http.Redirect(w, r, "/DeafTest", http.StatusSeeOther)
+		} else if room.GameMode.Id == 2 {
+			http.Redirect(w, r, "/ScatterGorries", http.StatusSeeOther)
+		}
+	} else {
+		http.Redirect(w, r, "/Gamepage", http.StatusSeeOther)
 	}
 }
 
@@ -189,6 +193,14 @@ func ScatterGorries(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Expose-Headers", "Content-Type")
+
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	w.(http.Flusher).Flush()
+
 	template.Execute(w, r)
 }
 
