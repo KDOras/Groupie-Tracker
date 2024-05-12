@@ -1,9 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
-    <title>Create Room BlindTest</title>
-    <meta charset="utf-8" />
-    <link href="/static/games.css" rel="stylesheet" type="text/css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blindtest</title>
+    <link rel="stylesheet" href="/static/blindtest.css" />
   </head>
-  <body></body>
+  <body>
+    <header>
+      <h1>Blindtest</h1>
+    </header>
+    <main>
+      <div id="player">
+        <audio controls id="audioPlayer" autoplay>
+          <source src="/randomTrack" type="audio/mpeg" />
+          Erreur lors du chargement de l'audio
+        </audio>
+      </div>
+      <div id="guess">
+        <input type="text" id="answer" placeholder="Entrez votre réponse" />
+        <button id="submit">Valider</button>
+      </div>
+      <div id="result">
+        <p id="resultText"></p>
+      </div>
+    </main>
+    <footer>
+      <p>A great footer</p>
+    </footer>
+  </body>
 </html>
