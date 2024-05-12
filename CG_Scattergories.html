@@ -3,18 +3,36 @@
   <head>
     <title>DeafTest</title>
     <meta charset="utf-8" />
-    <link href="/static/games.css" rel="stylesheet" type="text/css" />
+    <link href="/static/games.css" rel="stylesheet" />
   </head>
   <body>
     <h1>ScatterGorrie</h1>
-    <h2>{{.Letter}}</h2>
+    <h2>Random Letter : {{.Letter}}</h2>
     <div class="CategoriesTab">
     {{range $i := .Categories}}
       <div class="Category">
         <p class="CategoryName">{{$i.Name}}</p>
-        <Input id="R{{$i.Categories}}" ></Input>
+        <Input id="R{{$i.Id}}" ></Input>
       </div>
     {{end}}
+    <button id="Ready">Ready</button>
+    <p id="timer">60</p>
+
+<script>
+var timeLeft = 60;
+var timerId = setInterval(countdown, 1000);
+
+function countdown() {
+    if (timeLeft == 0) {
+        clearTimeout(timerId);
+        // Do something when the timer reaches 0
+        window.location.href = "/end"; // Redirect to end page
+    } else {
+        timeLeft--;
+        document.getElementById('timer').textContent = timeLeft;
+    }
+}
+</script>
   </div>
   </body>
 </html>

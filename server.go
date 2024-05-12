@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"groupie/src/databaseManager"
+	Game "groupie/src/games"
 	"html/template"
 	"log"
 	"net/http"
@@ -25,6 +26,16 @@ type GamePageVar struct {
 	IsSidePanelOpen interface{}
 	Username        interface{}
 	RoomList        []databaseManager.Room
+}
+
+type Category struct {
+	Id   int
+	Name string
+}
+
+type scattergorries struct {
+	Letter     string
+	Categories []Category
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
@@ -204,6 +215,14 @@ func ScatterGorries(w http.ResponseWriter, r *http.Request) {
 	template.Execute(w, r)
 }
 
+func ScatterGorriesGame(w http.ResponseWriter, r *http.Request, s scattergorries) {
+	template, err := template.ParseFiles("./CG_Scattergories.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	template.Execute(w, s)
+}
+
 func Settings(w http.ResponseWriter, r *http.Request) {
 	template, err := template.ParseFiles("./settings.html")
 	if err != nil {
@@ -213,6 +232,8 @@ func Settings(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	anciantLetters := []string{}
+	s := scattergorries{Letter: Game.RandomLetter(anciantLetters), Categories: []Category{{Name: "Animal"}, {Name: "Fruit"}, {Name: "Country"}, {Name: "City"}, {Name: "Object"}, {Name: "Name"}}}
 	tpl, _ = template.ParseGlob("*.html")
 	dbErr := Err{Err: ""}
 	http.HandleFunc("/", Home)
@@ -222,6 +243,9 @@ func main() {
 	http.HandleFunc("/DeafTest", DeafTest)
 	http.HandleFunc("/ScatterGorries", ScatterGorries)
 	http.HandleFunc("/JoinRoom", JoinRoom)
+	http.HandleFunc("/S", func(w http.ResponseWriter, r *http.Request) {
+		ScatterGorriesGame(w, r, s)
+	})
 	http.HandleFunc("/Register", func(w http.ResponseWriter, r *http.Request) {
 		Create(w, r, &dbErr)
 	})
