@@ -28,6 +28,12 @@ type GamePageVar struct {
 	RoomList        []databaseManager.Room
 }
 
+type DeafVar struct {
+	IsStarted bool
+	HasWon    bool
+	Song      Game.Song
+}
+
 type Category struct {
 	Id   int
 	Name string
@@ -190,9 +196,8 @@ func BlindTest(w http.ResponseWriter, r *http.Request) {
 	}
 	template.Execute(w, r)
 }
-
-func DeafTest(w http.ResponseWriter, r *http.Request) {
-	template, err := template.ParseFiles("./deaftest.html")
+func BlindTestGame(w http.ResponseWriter, r *http.Request) {
+	template, err := template.ParseFiles("./CG_Blindtest.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -223,6 +228,50 @@ func ScatterGorriesGame(w http.ResponseWriter, r *http.Request, s scattergorries
 	template.Execute(w, s)
 }
 
+func DeafTest(w http.ResponseWriter, r *http.Request) {
+	template, err := template.ParseFiles("./Deaftest.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	template.Execute(w, r)
+}
+
+func CreateDeafRoom(w http.ResponseWriter, r *http.Request) {
+	session, _ := store.Get(r, "session-name")
+	user := session.Values["User-Id"]
+	formatMaxP, _ := strconv.Atoi(r.FormValue("maxPlayer"))
+	room := databaseManager.Room{Name: r.FormValue("roomName"), MaxPlayer: formatMaxP, CreatedBy: databaseManager.GetUserById_interface(databaseManager.InitDatabase("SQL/database.db"), user), GameMode: databaseManager.GameMode{Id: 1}, Password: ""}
+	databaseManager.CreateRoom(databaseManager.InitDatabase("SQL/database.db"), room)
+	http.Redirect(w, r, "/DeafTest/Start", http.StatusSeeOther)
+}
+
+func DeafTest_Start(w http.ResponseWriter, r *http.Request) {
+	template, err := template.ParseFiles("./CG_Deaftest.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	vars := DeafVar{IsStarted: true, Song: Game.GetRandomSong()}
+
+	template.Execute(w, vars)
+}
+
+func DeafTest_End(w http.ResponseWriter, r *http.Request) {
+	template, err := template.ParseFiles("./CG_Deaftest.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	vars := DeafVar{IsStarted: false, Song: Game.Song{Name: r.FormValue("submitButton")}}
+	if r.FormValue("submitButton") == r.FormValue("input") {
+		vars.HasWon = true
+		//TODO - Update player Score
+	} else {
+		vars.HasWon = false
+		//TODO - Update Room ScoreBoard
+	}
+	template.Execute(w, vars)
+}
+
 func Settings(w http.ResponseWriter, r *http.Request) {
 	template, err := template.ParseFiles("./settings.html")
 	if err != nil {
@@ -240,12 +289,16 @@ func main() {
 	http.HandleFunc("/Gamepage", GamePage)
 	http.HandleFunc("/Settings", Settings)
 	http.HandleFunc("/BlindTest", BlindTest)
+	http.HandleFunc("/BlindTestGame", BlindTestGame)
 	http.HandleFunc("/DeafTest", DeafTest)
+	http.HandleFunc("/Create/DeafTest", CreateDeafRoom)
+	http.HandleFunc("/DeafTest/Start", DeafTest_Start)
+	http.HandleFunc("/DeafTest/End", DeafTest_End)
 	http.HandleFunc("/ScatterGorries", ScatterGorries)
-	http.HandleFunc("/JoinRoom", JoinRoom)
 	http.HandleFunc("/S", func(w http.ResponseWriter, r *http.Request) {
 		ScatterGorriesGame(w, r, s)
 	})
+	http.HandleFunc("/JoinRoom", JoinRoom)
 	http.HandleFunc("/Register", func(w http.ResponseWriter, r *http.Request) {
 		Create(w, r, &dbErr)
 	})

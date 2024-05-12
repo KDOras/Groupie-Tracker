@@ -3,7 +3,44 @@
   <head>
     <title>Create Room DeafTest</title>
     <meta charset="utf-8" />
-    <link href="/static/games.css" rel="stylesheet" type="text/css" />
+    <link href="/static/games_deaf.css" rel="stylesheet" type="text/css" />
   </head>
-  <body></body>
+  <body>
+    {{if eq .IsStarted true}}
+    <div class="countdown">
+      <svg viewBox="-50 -50 100 100" stroke-width="10">
+        <circle r="45"></circle>
+        <circle r="45" stroke-dasharray="282.7433388230814" stroke-dashoffset="282.7433388230814px"></circle>
+      </svg>
+    </div>
+    <form action="/DeafTest/End">
+      <p id="lyricsText">{{.Song.Lyrics}}</p>
+      <input type="text" name="input" placeholder="Your Guess...">
+      <button name="submitButton" value={{.Song.Name}}>Submit</button>
+    </form>
+    {{end}}
+    {{if eq .IsStarted false}}
+      {{if eq .HasWon true}}
+        <p>You guessed right!</p>
+        <form action="/DeafTest/Start">
+          <button>Continue?</button>
+        </form>
+        <form action="/GamePage">
+          <button>Quit?</button>
+        </form>
+      {{end}}
+      {{if eq .HasWon false}}
+        <p>Nah! It was {{.Song.Name}}'s lyrics.</p>
+        <form action="/DeafTest/Start">
+          <button>Restart?</button>
+        </form>
+        <form action="/GamePage">
+          <button>Quit?</button>
+        </form>
+      {{end}}
+    {{end}}
+    <script>
+      
+    </script>
+  </body>
 </html>

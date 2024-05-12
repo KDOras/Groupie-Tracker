@@ -96,13 +96,12 @@ func InitDatabase(database string) *sql.DB {
 // Region Start - Rooms
 
 func insertIntoRooms(db *sql.DB, room Room) (int64, error) {
-	result, _ := db.Exec(`INSERT INTO ROOMS (created_by, max_player, name, password, id_game) VALUES (?, ?, ?, ?, ?)`, room.CreatedBy.Id, room.MaxPlayer, room.Name, room.Password, room.GameMode.Id)
-	return result.LastInsertId()
+	res, _ := db.Exec(`INSERT INTO ROOMS (created_by, max_player, name, password, id_game) VALUES (?, ?, ?, ?, ?)`, room.CreatedBy.Id, room.MaxPlayer, room.Name, room.Password, room.GameMode.Id)
+	return res.LastInsertId()
 }
 
-func insertIntoRoom_Users(db *sql.DB, room Room, user ConnectedUser) (int64, error) {
-	result, _ := db.Exec(`INSERT INTO ROOM_USERS (id_room, id_user, score) VALUES (?, ?, ?)`, room.Id, user.Id, 0)
-	return result.LastInsertId()
+func insertIntoRoom_Users(db *sql.DB, room int64, user ConnectedUser) {
+	db.Exec(`INSERT INTO ROOM_USERS (id_room, id_user, score) VALUES (?, ?, ?)`, room, user.Id, 0)
 }
 
 func ChangeRoomGameMode(db *sql.DB, idRoom, idGame int) {
@@ -110,8 +109,8 @@ func ChangeRoomGameMode(db *sql.DB, idRoom, idGame int) {
 }
 
 func CreateRoom(db *sql.DB, room Room) {
-	insertIntoRooms(db, room)
-	insertIntoRoom_Users(db, room, room.CreatedBy)
+	id, _ := insertIntoRooms(db, room)
+	defer insertIntoRoom_Users(db, id, room.CreatedBy)
 }
 
 func GetRoom(db *sql.DB, id int) Room {
@@ -133,7 +132,7 @@ func GetRoom(db *sql.DB, id int) Room {
 func JoinRoom(db *sql.DB, user ConnectedUser, room Room) string {
 	if !isRoomFull(db, room) {
 		if !IsAlreadyPlaying(db, user) {
-			insertIntoRoom_Users(db, room, user)
+			insertIntoRoom_Users(db, int64(room.Id), user)
 			return ""
 		}
 		return "Someone with the same account is already playing."
@@ -188,8 +187,8 @@ func LeaveRoom(db *sql.DB, userId int) {
 }
 
 func DelRoom(db *sql.DB, roomId int) {
-	db.Exec(`DELETE * FROM ROOM_USERS WHERE (id_room==?)`, roomId)
-	db.Exec(`DELETE * FROM ROOMS WHERE (id==?)`, roomId)
+	db.Exec(`DELETE FROM ROOM_USERS WHERE (id_room==?)`, roomId)
+	db.Exec(`DELETE FROM ROOMS WHERE (id==?)`, roomId)
 }
 
 func GetNumberOfPlayerFromRoom(db *sql.DB, roomId int) int {
@@ -284,6 +283,18 @@ func LogOut() ConnectedUser {
 }
 
 func GetUserById(db *sql.DB, id int) ConnectedUser {
+	data, err := db.Query(`SELECT id, Username FROM USER WHERE (id==?)`, id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var user ConnectedUser
+	for data.Next() {
+		data.Scan(&user.Id, &user.Username)
+	}
+	return user
+}
+
+func GetUserById_interface(db *sql.DB, id interface{}) ConnectedUser {
 	data, err := db.Query(`SELECT id, Username FROM USER WHERE (id==?)`, id)
 	if err != nil {
 		log.Fatal(err)

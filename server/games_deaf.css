@@ -1,0 +1,149 @@
+.countdown {
+    display: grid;
+    margin: 1em auto;
+    width: 20em;
+    height: 20em;
+  }
+  .countdown::after {
+    grid-column: 1;
+    grid-row: 1;
+    place-self: center;
+    font: 5em/2 ubuntu mono, consolas, monaco, monospace;
+    animation: num 30s steps(1);
+    content: "0:" counter(s, decimal-leading-zero);
+  }
+  
+  @keyframes num {
+      0% {
+        counter-reset: s 30;
+      }
+      3% {
+        counter-reset: s 29;
+      }
+      6% {
+        counter-reset: s 28;
+      }
+      9% {
+        counter-reset: s 27;
+      }
+      13% {
+        counter-reset: s 26;
+      }
+      16% {
+        counter-reset: s 25;
+      }
+      19% {
+        counter-reset: s 24;
+      }
+      22% {
+        counter-reset: s 23;
+      }
+      26% {
+        counter-reset: s 22;
+      }
+      29% {
+        counter-reset: s 21;
+      }
+    32% {
+      counter-reset: s 20;
+    }
+    35% {
+      counter-reset: s 19;
+    }
+    39% {
+      counter-reset: s 18;
+    }
+    42% {
+      counter-reset: s 17;
+    }
+    45% {
+      counter-reset: s 16;
+    }
+    48% {
+      counter-reset: s 15;
+    }
+    52% {
+      counter-reset: s 14;
+    }
+    55% {
+      counter-reset: s 13;
+    }
+    58% {
+      counter-reset: s 12;
+    }
+    61% {
+      counter-reset: s 11;
+    }
+    65% {
+      counter-reset: s 10;
+    }
+    68% {
+      counter-reset: s 9;
+    }
+    71% {
+      counter-reset: s 8;
+    }
+    74% {
+      counter-reset: s 7;
+    }
+    77% {
+      counter-reset: s 6;
+    }
+    81% {
+      counter-reset: s 5;
+    }
+    84% {
+      counter-reset: s 4;
+    }
+    87% {
+      counter-reset: s 3;
+    }
+    91% {
+      counter-reset: s 2;
+    }
+    95% {
+      counter-reset: s 1;
+    }
+    100% {
+      counter-reset: s 0;
+    }
+  }
+  svg {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  
+  [r] {
+    fill: none;
+    stroke: silver;
+  }
+  [r] + [r] {
+    transform: rotate(-90deg);
+    stroke-linecap: round;
+    stroke: #8A9B0F;
+    animation: arc 30s linear;
+    animation-name: arc, col;
+  }
+  
+  @keyframes arc {
+    0% {
+      stroke-dashoffset: 0px;
+    }
+  }
+  @keyframes col {
+    0% {
+      stroke: #8A9B0F;
+    }
+    25% {
+      stroke: #F8CA00;
+    }
+    50% {
+      stroke: #E97F02;
+    }
+    75% {
+      stroke: #BD1550;
+    }
+    100% {
+      stroke: #490A3D;
+    }
+  }
