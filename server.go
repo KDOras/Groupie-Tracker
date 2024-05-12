@@ -29,9 +29,10 @@ type GamePageVar struct {
 }
 
 type DeafVar struct {
-	IsStarted bool
-	HasWon    bool
-	Song      Game.Song
+	IsStarted   bool
+	HasWon      bool
+	Song        Game.Song
+	Leaderboard databaseManager.LeaderBoard
 }
 
 type Category struct {
@@ -261,10 +262,15 @@ func DeafTest_End(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	session, _ := store.Get(r, "session-name")
+	user := session.Values["User-Id"]
+	fuser := databaseManager.GetUserById_interface(databaseManager.InitDatabase("SQL/database.db"), user)
+	databaseManager.GetRoomFromUser(databaseManager.InitDatabase("SQL/database.db"), fuser)
 	vars := DeafVar{IsStarted: false, Song: Game.Song{Name: r.FormValue("submitButton")}}
 	if r.FormValue("submitButton") == r.FormValue("input") {
 		vars.HasWon = true
 		//TODO - Update player Score
+
 	} else {
 		vars.HasWon = false
 		//TODO - Update Room ScoreBoard

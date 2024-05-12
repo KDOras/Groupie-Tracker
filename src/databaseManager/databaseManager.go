@@ -5,6 +5,8 @@ import (
 	"log"
 	"math/rand"
 
+	"strconv"
+
 	emailverifier "github.com/AfterShip/email-verifier"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -22,6 +24,11 @@ type User struct {
 type ConnectedUser struct {
 	Id       interface{}
 	Username interface{}
+}
+
+type LeaderBoard struct {
+	Users  []interface{}
+	Scores []int
 }
 
 type Room struct {
@@ -104,6 +111,10 @@ func insertIntoRoom_Users(db *sql.DB, room int64, user ConnectedUser) {
 	db.Exec(`INSERT INTO ROOM_USERS (id_room, id_user, score) VALUES (?, ?, ?)`, room, user.Id, 0)
 }
 
+func insertIntoLeaderboard(db *sql.DB, room int64) {
+	db.Exec(`INSERT INTO LEADERBOARDS (room_id, first, second, third, fourth, fifth) VALUES (?, ?, ?, ?, ?, ?)`, room, "", "", "", "", "")
+}
+
 func ChangeRoomGameMode(db *sql.DB, idRoom, idGame int) {
 	db.Exec(`UPDATE ROOMS SET id_game=? WHERE id=?`, idGame, idRoom)
 }
@@ -111,6 +122,7 @@ func ChangeRoomGameMode(db *sql.DB, idRoom, idGame int) {
 func CreateRoom(db *sql.DB, room Room) {
 	id, _ := insertIntoRooms(db, room)
 	defer insertIntoRoom_Users(db, id, room.CreatedBy)
+	defer insertIntoLeaderboard(db, id)
 }
 
 func GetRoom(db *sql.DB, id int) Room {
@@ -127,6 +139,18 @@ func GetRoom(db *sql.DB, id int) Room {
 	room.CreatedBy = GetUserById(db, created_by)
 	room.GameMode = GetGame(db, game)
 	return room
+}
+
+func GetRoomFromUser(db *sql.DB, user ConnectedUser) Room {
+	data, err := db.Query(`SELECT id_room FROM ROOM_USERS WHERE (id==?)`, user.Id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	id := 0
+	for data.Next() {
+		data.Scan(&id)
+	}
+	return GetRoom(db, id)
 }
 
 func JoinRoom(db *sql.DB, user ConnectedUser, room Room) string {
@@ -217,6 +241,87 @@ func GetGame(db *sql.DB, id int) GameMode {
 		data.Scan(&game.Id, &game.Name)
 	}
 	return game
+}
+
+func IncreaseUserScore(user ConnectedUser) {
+	db := InitDatabase("SQL/database.db")
+	data, _ := db.Query(`SELECT score FROM ROOM_USERS WHERE (id_user==?)`, user.Id)
+	score := 0
+	for data.Next() {
+		data.Scan(&score)
+	}
+	score++
+	db.Exec("UPDATE ROOM_USERS SET score=? WHERE id_user=?", score, user.Id)
+}
+
+func ResetUserScore(user ConnectedUser) {
+	db := InitDatabase("SQL/database.db")
+	db.Exec("UPDATE ROOM_USERS SET score=? WHERE id_user=?", 0, user.Id)
+}
+
+func formatLead(str string) []string {
+	result := []string{}
+	stri := ""
+	for i := range str {
+		if string(str[i]) == ";" {
+			result = append(result, stri)
+		} else {
+			stri += string(str[i])
+		}
+	}
+	result = append(result, stri)
+	return result
+}
+
+func GetLB(roomId int) LeaderBoard {
+	result := LeaderBoard{}
+	db := InitDatabase("SQL/database.db")
+	data, _ := db.Query(`SELECT first, second, third, fourth, fifth FROM LEADERBOARDS WHERE (room_id==?)`, roomId)
+	i := 0
+	for data.Next() {
+		str := ""
+		data.Scan(str)
+		fstr := formatLead(str)
+		result.Users[i] = fstr[0]
+		s, _ := strconv.Atoi(fstr[1])
+		result.Scores[i] = s
+	}
+	return result
+}
+
+func UptLead(roomId int, user ConnectedUser) {
+	actualLB := GetLB(roomId)
+	result := LeaderBoard{}
+	userAdded := false
+	if actualLB.Users[0] == "" {
+		result.Users = append(result.Users, user.Username)
+		result.Scores = append(result.Scores)
+	} else {
+		for _, e := range *leaderboard {
+			if user.Score > e.Score && user.Username != e.Username && !userAdded {
+				result = append(result, *user)
+				result = append(result, e)
+				userAdded = true
+			} else if user.Score >= e.Score && user.Username == e.Username && !userAdded {
+				result = append(result, *user)
+				userAdded = true
+			} else if user.Username != e.Username {
+				result = append(result, e)
+			} else {
+				result = append(result, e)
+				userAdded = true
+			}
+		}
+		if !userAdded {
+			result = append(result, *user)
+			userAdded = true
+		}
+		if len(result) >= 5 {
+			*leaderboard = result[0:5]
+		} else {
+			*leaderboard = result
+		}
+	}
 }
 
 // Region End - Game Modes
