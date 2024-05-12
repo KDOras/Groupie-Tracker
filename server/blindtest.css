@@ -1,0 +1,61 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header,
+footer {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+}
+
+main {
+  padding: 20px;
+}
+
+#audioPlayer {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+#guess {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+#answer {
+  padding: 10px;
+  margin-right: 10px;
+  width: 60%;
+  border: 1px solid #ccc;
+}
+
+#submit {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+#submit:hover {
+  background-color: #45a049;
+}
+
+#result {
+  text-align: center;
+}
+
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #333;
+  color: #fff;
+  padding: 10px 0;
+  text-align: center;
+}
