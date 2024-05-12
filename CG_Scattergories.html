@@ -16,6 +16,12 @@
       </div>
     {{end}}
     <button id="Ready">Ready</button>
+    <div class="CategoriesTab">
+      {{range $i := .Leaderboard}}
+        <div class="Leaderboard">
+          <p class="LeaderboardUser" id="R{{$i.Place}}">{{$i.Username}} : {{$i.Point}}</p>
+        </div>
+      {{end}}
     <p id="timer">60</p>
 
 <script>
