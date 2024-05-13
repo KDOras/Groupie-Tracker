@@ -1,7 +1,7 @@
 package main
 
 import (
-	databaseManager "groupie/src/databasemanager"
+	"groupie/src/databaseManager"
 )
 
 func main() {
