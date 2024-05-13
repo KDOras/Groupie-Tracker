@@ -40,7 +40,9 @@ ipconfig
 
 Copy Your IP Local and give them to your friend
 
-and them paste it in browser with :8080
+The Host have to "localhost:8080"
+
+and them your friend, paste it in browser with :8080
 
 example :
 
