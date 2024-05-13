@@ -1,9 +1,10 @@
 package main
 
 import (
-	databaseManager "groupie/src/databasemanager"
+	"fmt"
+	"groupie/src/databaseManager"
 )
 
 func main() {
-	databaseManager.DelRoom(databaseManager.InitDatabase("SQL/database.db"), 2)
+	fmt.Println(databaseManager.GetRoomFromUser(databaseManager.InitDatabase("SQL/database.db"), databaseManager.ConnectedUser{Id: 1}).Id)
 }

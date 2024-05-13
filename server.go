@@ -41,8 +41,10 @@ type Category struct {
 }
 
 type scattergorries struct {
-	Letter     string
-	Categories []Category
+	Letter      string
+	Categories  []Category
+	IsEnd       bool
+	Leaderboard databaseManager.LeaderBoard
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
@@ -269,12 +271,15 @@ func DeafTest_End(w http.ResponseWriter, r *http.Request) {
 	vars := DeafVar{IsStarted: false, Song: Game.Song{Name: r.FormValue("submitButton")}}
 	if r.FormValue("submitButton") == r.FormValue("input") {
 		vars.HasWon = true
-		//TODO - Update player Score
-
+		databaseManager.IncreaseUserScore(fuser)
 	} else {
 		vars.HasWon = false
-		//TODO - Update Room ScoreBoard
+		room := databaseManager.GetRoomFromUser(databaseManager.InitDatabase("SQL/database.db"), fuser)
+		newLB := databaseManager.UptLead(room.Id, databaseManager.GetUserScore(fuser))
+		databaseManager.SaveLB(room.Id, newLB)
+		defer databaseManager.ResetUserScore(fuser)
 	}
+	vars.Leaderboard = databaseManager.GetLB(databaseManager.GetRoomFromUser(databaseManager.InitDatabase("SQL/database.db"), fuser).Id)
 	template.Execute(w, vars)
 }
 

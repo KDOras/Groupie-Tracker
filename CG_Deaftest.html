@@ -22,9 +22,9 @@
           Most wins in a row
         </h1>
         <ol>
-          {{range .Leaderboard}}
+          {{range .Leaderboard.UserList}}
           <li>
-            <mark>{{.Username}}</mark>
+            <mark>{{.User}}</mark>
             <small>{{.Score}}</small>
           </li>
           {{end}}
