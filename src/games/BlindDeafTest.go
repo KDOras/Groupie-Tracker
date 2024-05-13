@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"groupie/src/databaseManager"
 	"math/rand"
+	"os"
 	"strings"
 )
 
@@ -32,7 +33,7 @@ func GetHighestId() int {
 	return id
 }
 
-func GetRandomSong() Song {
+func GetRandomLyrics() Song {
 	db := databaseManager.InitDatabase("SQL/database.db")
 	n := rand.Intn(GetHighestId())
 	data, err := db.Query("SELECT name, lyrics FROM Songs WHERE id=?", n)
@@ -47,4 +48,11 @@ func GetRandomSong() Song {
 	}
 	song := Song{Name: name, Lyrics: lyrics}
 	return song
+}
+
+func GetRandomSong() string {
+	dir, _ := os.ReadDir("./../mp3")
+	n := rand.Intn(len(dir) - 1)
+	str := fmt.Sprintf("%v", dir[n])
+	return str
 }

@@ -35,6 +35,10 @@ type DeafVar struct {
 	Leaderboard databaseManager.LeaderBoard
 }
 
+type BlindVar struct {
+	Music string
+}
+
 type Category struct {
 	Id   int
 	Name string
@@ -204,7 +208,8 @@ func BlindTestGame(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	template.Execute(w, r)
+	vars := BlindVar{Music: Game.GetRandomSong()}
+	template.Execute(w, vars)
 }
 
 func ScatterGorries(w http.ResponseWriter, r *http.Request) {
@@ -254,7 +259,7 @@ func DeafTest_Start(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	vars := DeafVar{IsStarted: true, Song: Game.GetRandomSong()}
+	vars := DeafVar{IsStarted: true, Song: Game.GetRandomLyrics()}
 
 	template.Execute(w, vars)
 }
@@ -328,13 +333,13 @@ func main() {
 		OpenSidePanel(w, r)
 	})
 	http.HandleFunc("/BlindTestGame", func(w http.ResponseWriter, r *http.Request) {
-        http.ServeFile(w, r, "CG_Blindtest.html")
-    })
+		http.ServeFile(w, r, "CG_Blindtest.html")
+	})
 
-    http.HandleFunc("/audio.mp3", func(w http.ResponseWriter, r *http.Request) {
-        w.Header().Set("Content-Type", "audio/mpeg")
-        http.ServeFile(w, r, "mp3/rick-astley-never-gonna-give-you-up-official-music-video_EVT7EZaw.mp3")
-    })
+	http.HandleFunc("/audio.mp3", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "audio/mpeg")
+		http.ServeFile(w, r, "mp3/rick-astley-never-gonna-give-you-up-official-music-video_EVT7EZaw.mp3")
+	})
 	fs := http.FileServer(http.Dir("./server/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.ListenAndServe(":8080", context.ClearHandler(http.DefaultServeMux))
