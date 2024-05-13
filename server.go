@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"groupie/src/databaseManager"
 	Game "groupie/src/games"
 	"html/template"
@@ -34,14 +35,20 @@ type DeafVar struct {
 	Leaderboard databaseManager.LeaderBoard
 }
 
+type BlindVar struct {
+	Music string
+}
+
 type Category struct {
 	Id   int
 	Name string
 }
 
 type scattergorries struct {
-	Letter     string
-	Categories []Category
+	Letter      string
+	Categories  []Category
+	IsEnd       bool
+	Leaderboard databaseManager.LeaderBoard
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
@@ -87,6 +94,7 @@ func JoinRoom(w http.ResponseWriter, r *http.Request) {
 	formatizedRoomId, _ := strconv.Atoi(roomId)
 	err := databaseManager.JoinRoom(databaseManager.InitDatabase("SQL/database.db"), databaseManager.ConnectedUser{Id: userId, Username: username}, databaseManager.GetRoom(databaseManager.InitDatabase("SQL/database.db"), formatizedRoomId))
 	room := databaseManager.GetRoom(databaseManager.InitDatabase("SQL/database.db"), formatizedRoomId)
+	fmt.Println(err)
 	if err == "" {
 		if room.GameMode.Id == 0 {
 			http.Redirect(w, r, "/BlindTest", http.StatusSeeOther)
@@ -200,7 +208,8 @@ func BlindTestGame(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	template.Execute(w, r)
+	vars := BlindVar{Music: Game.GetRandomSong()}
+	template.Execute(w, vars)
 }
 
 func ScatterGorries(w http.ResponseWriter, r *http.Request) {
@@ -250,7 +259,7 @@ func DeafTest_Start(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	vars := DeafVar{IsStarted: true, Song: Game.GetRandomSong()}
+	vars := DeafVar{IsStarted: true, Song: Game.GetRandomLyrics()}
 
 	template.Execute(w, vars)
 }
@@ -263,6 +272,7 @@ func DeafTest_End(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "session-name")
 	user := session.Values["User-Id"]
 	fuser := databaseManager.GetUserById_interface(databaseManager.InitDatabase("SQL/database.db"), user)
+	databaseManager.GetRoomFromUser(databaseManager.InitDatabase("SQL/database.db"), fuser)
 	vars := DeafVar{IsStarted: false, Song: Game.Song{Name: r.FormValue("submitButton")}}
 	if r.FormValue("submitButton") == r.FormValue("input") {
 		vars.HasWon = true
@@ -295,7 +305,6 @@ func main() {
 	http.HandleFunc("/Gamepage", GamePage)
 	http.HandleFunc("/Settings", Settings)
 	http.HandleFunc("/BlindTest", BlindTest)
-	http.HandleFunc("/BlindTestGame", BlindTestGame)
 	http.HandleFunc("/DeafTest", DeafTest)
 	http.HandleFunc("/Create/DeafTest", CreateDeafRoom)
 	http.HandleFunc("/DeafTest/Start", DeafTest_Start)
@@ -322,6 +331,14 @@ func main() {
 	})
 	http.HandleFunc("/openProfile", func(w http.ResponseWriter, r *http.Request) {
 		OpenSidePanel(w, r)
+	})
+	http.HandleFunc("/BlindTestGame", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "CG_Blindtest.html")
+	})
+
+	http.HandleFunc("/audio.mp3", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "audio/mpeg")
+		http.ServeFile(w, r, "mp3/rick-astley-never-gonna-give-you-up-official-music-video_EVT7EZaw.mp3")
 	})
 	fs := http.FileServer(http.Dir("./server/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))

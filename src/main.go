@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
-	"groupie/src/databaseManager"
+	Game "groupie/src/games"
 )
 
 func main() {
-	fmt.Println(databaseManager.GetRoomFromUser(databaseManager.InitDatabase("SQL/database.db"), databaseManager.ConnectedUser{Id: 1}).Id)
+	fmt.Println(Game.GetRandomSong())
 }
