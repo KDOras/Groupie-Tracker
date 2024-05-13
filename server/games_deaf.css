@@ -1,7 +1,6 @@
 .leaderboard {
   position: relative;
-  top: 50px;
-  transform: translate(0px, -120px);
+  transform: translate(0px, 0px);
   width: 285px;
   min-height: 308px;
   background: linear-gradient(to bottom, #3a404d, #181c26);

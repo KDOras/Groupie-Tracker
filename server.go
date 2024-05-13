@@ -2,7 +2,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"groupie/src/databaseManager"
 	Game "groupie/src/games"
 	"html/template"
@@ -88,7 +87,6 @@ func JoinRoom(w http.ResponseWriter, r *http.Request) {
 	formatizedRoomId, _ := strconv.Atoi(roomId)
 	err := databaseManager.JoinRoom(databaseManager.InitDatabase("SQL/database.db"), databaseManager.ConnectedUser{Id: userId, Username: username}, databaseManager.GetRoom(databaseManager.InitDatabase("SQL/database.db"), formatizedRoomId))
 	room := databaseManager.GetRoom(databaseManager.InitDatabase("SQL/database.db"), formatizedRoomId)
-	fmt.Println(err)
 	if err == "" {
 		if room.GameMode.Id == 0 {
 			http.Redirect(w, r, "/BlindTest", http.StatusSeeOther)
@@ -265,16 +263,18 @@ func DeafTest_End(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "session-name")
 	user := session.Values["User-Id"]
 	fuser := databaseManager.GetUserById_interface(databaseManager.InitDatabase("SQL/database.db"), user)
-	databaseManager.GetRoomFromUser(databaseManager.InitDatabase("SQL/database.db"), fuser)
 	vars := DeafVar{IsStarted: false, Song: Game.Song{Name: r.FormValue("submitButton")}}
 	if r.FormValue("submitButton") == r.FormValue("input") {
 		vars.HasWon = true
-		//TODO - Update player Score
-
+		databaseManager.IncreaseUserScore(fuser)
 	} else {
 		vars.HasWon = false
-		//TODO - Update Room ScoreBoard
+		room := databaseManager.GetRoomFromUser(databaseManager.InitDatabase("SQL/database.db"), fuser)
+		newLB := databaseManager.UptLead(room.Id, databaseManager.GetUserScore(fuser))
+		databaseManager.SaveLB(room.Id, newLB)
+		defer databaseManager.ResetUserScore(fuser)
 	}
+	vars.Leaderboard = databaseManager.GetLB(databaseManager.GetRoomFromUser(databaseManager.InitDatabase("SQL/database.db"), fuser).Id)
 	template.Execute(w, vars)
 }
 

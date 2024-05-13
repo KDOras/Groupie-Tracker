@@ -2,6 +2,7 @@ package databaseManager
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"math/rand"
 
@@ -26,9 +27,13 @@ type ConnectedUser struct {
 	Username interface{}
 }
 
+type PlayerScore struct {
+	User  string
+	Score int
+}
+
 type LeaderBoard struct {
-	Users  []interface{}
-	Scores []int
+	UserList []PlayerScore
 }
 
 type Room struct {
@@ -142,7 +147,7 @@ func GetRoom(db *sql.DB, id int) Room {
 }
 
 func GetRoomFromUser(db *sql.DB, user ConnectedUser) Room {
-	data, err := db.Query(`SELECT id_room FROM ROOM_USERS WHERE (id==?)`, user.Id)
+	data, err := db.Query(`SELECT id_room FROM ROOM_USERS WHERE (id_user==?)`, user.Id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -259,67 +264,131 @@ func ResetUserScore(user ConnectedUser) {
 	db.Exec("UPDATE ROOM_USERS SET score=? WHERE id_user=?", 0, user.Id)
 }
 
-func formatLead(str string) []string {
-	result := []string{}
+func GetUserScore(user ConnectedUser) PlayerScore {
+	str := fmt.Sprintf("%v", user.Username)
+	score := PlayerScore{User: str}
+	db := InitDatabase("SQL/database.db")
+	data, _ := db.Query(`SELECT score FROM ROOM_USERS WHERE (id_user==?)`, user.Id)
+	for data.Next() {
+		data.Scan(&score.Score)
+	}
+	return score
+}
+
+func formatLead(str string) PlayerScore {
+	result := PlayerScore{}
 	stri := ""
 	for i := range str {
 		if string(str[i]) == ";" {
-			result = append(result, stri)
+			result.User = stri
+			stri = ""
 		} else {
 			stri += string(str[i])
 		}
 	}
-	result = append(result, stri)
+	s, _ := strconv.Atoi(stri)
+	result.Score = s
 	return result
+}
+
+func unformatLead(score PlayerScore) string {
+	str := fmt.Sprintf("%v", score.User)
+	return str + ";" + strconv.Itoa(score.Score)
 }
 
 func GetLB(roomId int) LeaderBoard {
 	result := LeaderBoard{}
 	db := InitDatabase("SQL/database.db")
 	data, _ := db.Query(`SELECT first, second, third, fourth, fifth FROM LEADERBOARDS WHERE (room_id==?)`, roomId)
-	i := 0
 	for data.Next() {
 		str := ""
-		data.Scan(str)
-		fstr := formatLead(str)
-		result.Users[i] = fstr[0]
-		s, _ := strconv.Atoi(fstr[1])
-		result.Scores[i] = s
+		str1 := ""
+		str2 := ""
+		str3 := ""
+		str4 := ""
+		data.Scan(&str, &str1, &str2, &str3, &str4)
+		if str != "" {
+			fstr := formatLead(str)
+			result.UserList = append(result.UserList, fstr)
+		}
+		if str1 != "" {
+			fstr := formatLead(str1)
+			result.UserList = append(result.UserList, fstr)
+		}
+		if str2 != "" {
+			fstr := formatLead(str2)
+			result.UserList = append(result.UserList, fstr)
+		}
+		if str3 != "" {
+			fstr := formatLead(str3)
+			result.UserList = append(result.UserList, fstr)
+		}
+		if str4 != "" {
+			fstr := formatLead(str4)
+			result.UserList = append(result.UserList, fstr)
+		}
 	}
 	return result
 }
 
-func UptLead(roomId int, user ConnectedUser) {
+func UptLead(roomId int, user PlayerScore) LeaderBoard {
 	actualLB := GetLB(roomId)
 	result := LeaderBoard{}
 	userAdded := false
-	if actualLB.Users[0] == "" {
-		result.Users = append(result.Users, user.Username)
-		result.Scores = append(result.Scores)
+	if len(actualLB.UserList) == 0 {
+		actualLB.UserList = append(actualLB.UserList, user)
 	} else {
-		for _, e := range *leaderboard {
-			if user.Score > e.Score && user.Username != e.Username && !userAdded {
-				result = append(result, *user)
-				result = append(result, e)
+		for _, e := range actualLB.UserList {
+			fmt.Println(e.User)
+			if user.Score > e.Score && user.User != e.User && !userAdded {
+				fmt.Println("Test1")
+				result.UserList = append(result.UserList, user)
+				result.UserList = append(result.UserList, e)
 				userAdded = true
-			} else if user.Score >= e.Score && user.Username == e.Username && !userAdded {
-				result = append(result, *user)
+			} else if user.Score >= e.Score && user.User == e.User && !userAdded {
+				fmt.Println("Test2")
+				result.UserList = append(result.UserList, user)
 				userAdded = true
-			} else if user.Username != e.Username {
-				result = append(result, e)
+			} else if user.User != e.User {
+				fmt.Println("Test3")
+				result.UserList = append(result.UserList, e)
 			} else {
-				result = append(result, e)
+				fmt.Println("Test4")
+				result.UserList = append(result.UserList, e)
 				userAdded = true
 			}
 		}
 		if !userAdded {
-			result = append(result, *user)
+			fmt.Println("Test5")
+			result.UserList = append(result.UserList, user)
 			userAdded = true
 		}
-		if len(result) >= 5 {
-			*leaderboard = result[0:5]
+		if len(result.UserList) >= 5 {
+			fmt.Println("Test6")
+			actualLB.UserList = result.UserList[0:5]
 		} else {
-			*leaderboard = result
+			fmt.Println("Test7")
+			actualLB.UserList = result.UserList
+		}
+	}
+	return actualLB
+}
+
+func SaveLB(roomId int, lb LeaderBoard) {
+	db := InitDatabase("SQL/database.db")
+	fmt.Println(lb)
+	db.Exec("UPDATE LEADERBOARDS SET fifth=?, fourth=?, third=?, second=?, first=? WHERE room_id=?", "", "", "", "", "", roomId)
+	for i := range lb.UserList {
+		if i == 0 {
+			db.Exec("UPDATE LEADERBOARDS SET first=? WHERE room_id=?", unformatLead(lb.UserList[i]), roomId)
+		} else if i == 1 {
+			db.Exec("UPDATE LEADERBOARDS SET second=? WHERE room_id=?", unformatLead(lb.UserList[i]), roomId)
+		} else if i == 2 {
+			db.Exec("UPDATE LEADERBOARDS SET third=? WHERE room_id=?", unformatLead(lb.UserList[i]), roomId)
+		} else if i == 3 {
+			db.Exec("UPDATE LEADERBOARDS SET fourth=? WHERE room_id=?", unformatLead(lb.UserList[i]), roomId)
+		} else if i == 4 {
+			db.Exec("UPDATE LEADERBOARDS SET fifth=? WHERE room_id=?", unformatLead(lb.UserList[i]), roomId)
 		}
 	}
 }
