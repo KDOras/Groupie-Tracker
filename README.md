@@ -22,8 +22,8 @@ To start the server enter the following command line in your terminal
 go run server.go
 ```
 
-make sure to be on the right port before starting your server
-
 ## Get The Page
 
 Open your browser and type "localhost:8080"
+
+Make sure to add port 8080 when you start your server

@@ -295,7 +295,6 @@ func main() {
 	http.HandleFunc("/Gamepage", GamePage)
 	http.HandleFunc("/Settings", Settings)
 	http.HandleFunc("/BlindTest", BlindTest)
-	http.HandleFunc("/BlindTestGame", BlindTestGame)
 	http.HandleFunc("/DeafTest", DeafTest)
 	http.HandleFunc("/Create/DeafTest", CreateDeafRoom)
 	http.HandleFunc("/DeafTest/Start", DeafTest_Start)
@@ -323,6 +322,14 @@ func main() {
 	http.HandleFunc("/openProfile", func(w http.ResponseWriter, r *http.Request) {
 		OpenSidePanel(w, r)
 	})
+	http.HandleFunc("/BlindTestGame", func(w http.ResponseWriter, r *http.Request) {
+        http.ServeFile(w, r, "CG_Blindtest.html")
+    })
+
+    http.HandleFunc("/audio.mp3", func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Content-Type", "audio/mpeg")
+        http.ServeFile(w, r, "mp3/rick-astley-never-gonna-give-you-up-official-music-video_EVT7EZaw.mp3")
+    })
 	fs := http.FileServer(http.Dir("./server/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 	http.ListenAndServe(":8080", context.ClearHandler(http.DefaultServeMux))
