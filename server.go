@@ -216,23 +216,16 @@ func BlindTestGame(w http.ResponseWriter, r *http.Request) {
 }
 
 func ScatterGorries(w http.ResponseWriter, r *http.Request) {
-	template, err := template.ParseFiles("./scattergorries.html")
+	template, err := template.ParseFiles("./scattergories.html")
 	if err != nil {
 		log.Fatal(err)
 	}
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Expose-Headers", "Content-Type")
-
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-	w.(http.Flusher).Flush()
 
 	template.Execute(w, r)
 }
 
 func ScatterGorriesStart(w http.ResponseWriter, r *http.Request, al *[]string) {
-	s := scattergorries{Letter: Game.RandomLetter(al), Categories: []Category{{Name: "Animal"}, {Name: "Fruit"}, {Name: "Country"}, {Name: "City"}, {Name: "Object"}, {Name: "Name"}}, Start: true}
+	s := scattergorries{Letter: Game.RandomLetter(al), Categories: []Category{{Name: "Artiste"}, {Name: "Album"}, {Name: "Groupe De Musique"}, {Name: "Instrument De Musique"}, {Name: "Featuring"}}, Start: true}
 	template, err := template.ParseFiles("./CG_Scattergories.html")
 	if err != nil {
 		log.Fatal(err)

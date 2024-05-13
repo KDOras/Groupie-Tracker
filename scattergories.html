@@ -3,7 +3,7 @@
   <head>
     <title>BlindTest</title>
     <meta charset="utf-8" />
-    <link href="/static/games.css" rel="stylesheet" type="text/css" />
+    <link href="/static/games.css" rel="stylesheet"/>
   </head>
   <body>
     <div class="container">
@@ -11,7 +11,7 @@
         <p class="header">GAME RULES</p>
         <p class="text">
           <br /><br />
-          This game is a scattergorries game. <br /><br /><br />
+          This game is a blind test game. <br /><br /><br />
           The goal is to find the name of the song with the music as fast as
           possible to get a pountos. <br /><br /><br />
           You will have 10 secondes to find the song before the next one
@@ -20,9 +20,10 @@
         </p>
       </div>
       <div class="right-side">
-        <p class="gamename">ScatterGorries</p>
+        <p class="gamename">Blind Test</p>
         <br /><br /><br />
         <p class="createrooms">Create Rooms</p>
+        <form action="/ScatterGorries/Start">
         <div class="rooms">
           <div>
             <div>Room Name :&nbsp;&nbsp;&nbsp;</div>
@@ -38,10 +39,13 @@
             </select>
           </div>
           <div>
-            <button class="create-room-button">Create Room</button>
+            <button class="create-room-button">
+              Create Room
+            </button>
           </div>
         </div>
       </div>
+      </form>
     </div>
   </body>
 </html>

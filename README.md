@@ -27,3 +27,21 @@ go run server.go
 Open your browser and type "localhost:8080"
 
 Make sure to add port 8080 when you start your server
+
+## Multiplayer
+
+The Host have to Make A Connection Share
+
+Open cmd
+
+```cmd
+ipconfig
+```
+
+Copy Your IP Local and give them to your friend
+
+and them paste it in browser with :8080
+
+example :
+
+000.000.000:8080
