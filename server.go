@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"groupie/src/databaseManager"
 	Game "groupie/src/games"
 	"html/template"
@@ -40,8 +41,10 @@ type Category struct {
 }
 
 type scattergorries struct {
-	Letter     string
-	Categories []Category
+	Letter      string
+	Categories  []Category
+	IsEnd       bool
+	Leaderboard databaseManager.LeaderBoard
 }
 
 func Home(w http.ResponseWriter, r *http.Request) {
@@ -87,6 +90,7 @@ func JoinRoom(w http.ResponseWriter, r *http.Request) {
 	formatizedRoomId, _ := strconv.Atoi(roomId)
 	err := databaseManager.JoinRoom(databaseManager.InitDatabase("SQL/database.db"), databaseManager.ConnectedUser{Id: userId, Username: username}, databaseManager.GetRoom(databaseManager.InitDatabase("SQL/database.db"), formatizedRoomId))
 	room := databaseManager.GetRoom(databaseManager.InitDatabase("SQL/database.db"), formatizedRoomId)
+	fmt.Println(err)
 	if err == "" {
 		if room.GameMode.Id == 0 {
 			http.Redirect(w, r, "/BlindTest", http.StatusSeeOther)
@@ -263,6 +267,7 @@ func DeafTest_End(w http.ResponseWriter, r *http.Request) {
 	session, _ := store.Get(r, "session-name")
 	user := session.Values["User-Id"]
 	fuser := databaseManager.GetUserById_interface(databaseManager.InitDatabase("SQL/database.db"), user)
+	databaseManager.GetRoomFromUser(databaseManager.InitDatabase("SQL/database.db"), fuser)
 	vars := DeafVar{IsStarted: false, Song: Game.Song{Name: r.FormValue("submitButton")}}
 	if r.FormValue("submitButton") == r.FormValue("input") {
 		vars.HasWon = true
