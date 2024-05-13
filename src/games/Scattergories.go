@@ -4,12 +4,12 @@ import (
 	"math/rand"
 )
 
-func RandomLetter(anciantLetters []string) string {
+func RandomLetter(anciantLetters *[]string) string {
 	letter := rand.Intn(26)
 	formatLetter := string(byte(65 + letter))
 	letterIsGood := true
-	for i := range anciantLetters {
-		if formatLetter == anciantLetters[i] {
+	for _, i := range *anciantLetters {
+		if formatLetter == string(i) {
 			letterIsGood = false
 		}
 	}
