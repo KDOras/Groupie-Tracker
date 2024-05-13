@@ -47,6 +47,8 @@ type Category struct {
 type scattergorries struct {
 	Letter      string
 	Categories  []Category
+	Start       bool
+	Vote        bool
 	IsEnd       bool
 	Leaderboard databaseManager.LeaderBoard
 }
@@ -228,7 +230,26 @@ func ScatterGorries(w http.ResponseWriter, r *http.Request) {
 	template.Execute(w, r)
 }
 
-func ScatterGorriesGame(w http.ResponseWriter, r *http.Request, s scattergorries) {
+func ScatterGorriesStart(w http.ResponseWriter, r *http.Request, al *[]string) {
+	s := scattergorries{Letter: Game.RandomLetter(al), Categories: []Category{{Name: "Animal"}, {Name: "Fruit"}, {Name: "Country"}, {Name: "City"}, {Name: "Object"}, {Name: "Name"}}, Start: true}
+	template, err := template.ParseFiles("./CG_Scattergories.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	template.Execute(w, s)
+}
+
+func ScatterGorriesGame(w http.ResponseWriter, r *http.Request, al *[]string) {
+	s := scattergorries{Letter: Game.RandomLetter(al), Categories: []Category{{Name: "Animal"}, {Name: "Fruit"}, {Name: "Country"}, {Name: "City"}, {Name: "Object"}, {Name: "Name"}}, Vote: true}
+	template, err := template.ParseFiles("./CG_Scattergories.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	template.Execute(w, s)
+}
+
+func ScatterGorriesEnd(w http.ResponseWriter, r *http.Request, al *[]string) {
+	s := scattergorries{Letter: Game.RandomLetter(al), Categories: []Category{{Name: "Animal"}, {Name: "Fruit"}, {Name: "Country"}, {Name: "City"}, {Name: "Object"}, {Name: "Name"}}, IsEnd: true}
 	template, err := template.ParseFiles("./CG_Scattergories.html")
 	if err != nil {
 		log.Fatal(err)
@@ -297,8 +318,7 @@ func Settings(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	anciantLetters := []string{}
-	s := scattergorries{Letter: Game.RandomLetter(anciantLetters), Categories: []Category{{Name: "Animal"}, {Name: "Fruit"}, {Name: "Country"}, {Name: "City"}, {Name: "Object"}, {Name: "Name"}}}
+	anciantLetters := &[]string{}
 	tpl, _ = template.ParseGlob("*.html")
 	dbErr := Err{Err: ""}
 	http.HandleFunc("/", Home)
@@ -310,8 +330,14 @@ func main() {
 	http.HandleFunc("/DeafTest/Start", DeafTest_Start)
 	http.HandleFunc("/DeafTest/End", DeafTest_End)
 	http.HandleFunc("/ScatterGorries", ScatterGorries)
-	http.HandleFunc("/S", func(w http.ResponseWriter, r *http.Request) {
-		ScatterGorriesGame(w, r, s)
+	http.HandleFunc("/ScatterGorries/Start", func(w http.ResponseWriter, r *http.Request) {
+		ScatterGorriesStart(w, r, anciantLetters)
+	})
+	http.HandleFunc("/ScatterGorries/Vote", func(w http.ResponseWriter, r *http.Request) {
+		ScatterGorriesGame(w, r, anciantLetters)
+	})
+	http.HandleFunc("/ScatterGorries/End", func(w http.ResponseWriter, r *http.Request) {
+		ScatterGorriesEnd(w, r, anciantLetters)
 	})
 	http.HandleFunc("/JoinRoom", JoinRoom)
 	http.HandleFunc("/Register", func(w http.ResponseWriter, r *http.Request) {

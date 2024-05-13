@@ -7,7 +7,7 @@
   </head>
   <body>
     <h1>ScatterGorrie</h1>
-    {{if .Start true}}
+    {{if eq .Start true}}
     <h2>Random Letter : {{.Letter}}</h2>
     <div class="CategoriesTab">
     {{range $i := .Categories}}
@@ -20,7 +20,7 @@
     <button id="Ready">Ready</button>
     <p>Time Left: <span id="timer">60</span></p>
     {{end}}
-    {{if .Vote true}}
+    {{if eq .Vote true}}
     <h2>Vote for the best answer</h2>
     {{range $i := .Categories}}
       <div class="Category">
