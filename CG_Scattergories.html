@@ -25,7 +25,7 @@
     {{range $i := .Categories}}
       <div class="Category">
         <p class="CategoryVote">{{$i.Name}} : {{$i.Respond}}</p>
-        <Input id="R{{$i.Id}}" ></Input>
+        <checkbox id="V{{$i.Id}}" ></checkbox>
       </div>
     {{end}}
     {{end}}
