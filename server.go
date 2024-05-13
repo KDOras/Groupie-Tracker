@@ -36,7 +36,7 @@ type DeafVar struct {
 }
 
 type BlindVar struct {
-	Music string
+	Random int
 }
 
 type Category struct {
@@ -205,13 +205,14 @@ func BlindTest(w http.ResponseWriter, r *http.Request) {
 	}
 	template.Execute(w, r)
 }
+
 func BlindTestGame(w http.ResponseWriter, r *http.Request) {
 	template, err := template.ParseFiles("./CG_Blindtest.html")
 	if err != nil {
 		log.Fatal(err)
 	}
-	vars := BlindVar{Music: Game.GetRandomSong()}
-	template.Execute(w, vars)
+	Random := BlindVar{Random: Game.GetRandomSong()}
+	template.Execute(w, Random)
 }
 
 func ScatterGorries(w http.ResponseWriter, r *http.Request) {

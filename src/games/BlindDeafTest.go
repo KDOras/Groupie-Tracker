@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"groupie/src/databaseManager"
 	"math/rand"
-	"os"
 	"strings"
 )
 
@@ -50,9 +49,7 @@ func GetRandomLyrics() Song {
 	return song
 }
 
-func GetRandomSong() string {
-	dir, _ := os.ReadDir("./../mp3")
-	n := rand.Intn(len(dir) - 1)
-	str := fmt.Sprintf("%v", dir[n])
-	return str
+func GetRandomSong() int {
+	n := rand.Intn(3)
+	return n
 }
