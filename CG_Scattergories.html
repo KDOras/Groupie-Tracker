@@ -7,6 +7,7 @@
   </head>
   <body>
     <h1>ScatterGorrie</h1>
+    {{if .Start true}}
     <h2>Random Letter : {{.Letter}}</h2>
     <div class="CategoriesTab">
     {{range $i := .Categories}}
@@ -15,8 +16,19 @@
         <Input id="R{{$i.Id}}" ></Input>
       </div>
     {{end}}
+    </div>
     <button id="Ready">Ready</button>
     <p>Time Left: <span id="timer">60</span></p>
+    {{end}}
+    {{if .Vote true}}
+    <h2>Vote for the best answer</h2>
+    {{range $i := .Categories}}
+      <div class="Category">
+        <p class="CategoryVote">{{$i.Name}} : {{$i.Respond}}</p>
+        <Input id="R{{$i.Id}}" ></Input>
+      </div>
+    {{end}}
+    {{end}}
 <script>
 var timeLeft = 60;
 var timerId = setInterval(countdown, 1000);
@@ -32,6 +44,5 @@ function countdown() {
     }
 }
 </script>
-  </div>
   </body>
 </html>

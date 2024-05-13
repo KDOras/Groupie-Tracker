@@ -331,42 +331,6 @@ func GetLB(roomId int) LeaderBoard {
 	return result
 }
 
-<<<<<<< HEAD
-// func UptLead(roomId int, user ConnectedUser) {
-// 	actualLB := GetLB(roomId)
-// 	result := LeaderBoard{}
-// 	userAdded := false
-// 	if actualLB.Users[0] == "" {
-// 		result.Users = append(result.Users, user.Username)
-// 		result.Scores = append(result.Scores)
-// 	} else {
-// 		for _, e := range *leaderboard {
-// 			if user.Score > e.Score && user.Username != e.Username && !userAdded {
-// 				result = append(result, *user)
-// 				result = append(result, e)
-// 				userAdded = true
-// 			} else if user.Score >= e.Score && user.Username == e.Username && !userAdded {
-// 				result = append(result, *user)
-// 				userAdded = true
-// 			} else if user.Username != e.Username {
-// 				result = append(result, e)
-// 			} else {
-// 				result = append(result, e)
-// 				userAdded = true
-// 			}
-// 		}
-// 		if !userAdded {
-// 			result = append(result, *user)
-// 			userAdded = true
-// 		}
-// 		if len(result) >= 5 {
-// 			*leaderboard = result[0:5]
-// 		} else {
-// 			*leaderboard = result
-// 		}
-// 	}
-// }
-=======
 func UptLead(roomId int, user PlayerScore) LeaderBoard {
 	actualLB := GetLB(roomId)
 	result := LeaderBoard{}
@@ -428,7 +392,6 @@ func SaveLB(roomId int, lb LeaderBoard) {
 		}
 	}
 }
->>>>>>> db02f1c8a46d943d706529c833d3cce82d8461ba
 
 // Region End - Game Modes
 

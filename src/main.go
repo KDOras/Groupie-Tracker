@@ -1,12 +1,8 @@
 package main
 
 import (
-<<<<<<< HEAD
-	"groupie/src/databaseManager"
-=======
 	"fmt"
-	databaseManager "groupie/src/databasemanager"
->>>>>>> db02f1c8a46d943d706529c833d3cce82d8461ba
+	"groupie/src/databaseManager"
 )
 
 func main() {
